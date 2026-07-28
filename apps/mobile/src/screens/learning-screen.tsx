@@ -48,7 +48,12 @@ export function LearningScreen() {
           action="Play"
           onPress={() => router.push("/games/spelling-garden")}
         />
-        <ActivityCard title="Colour Critter Catch" body="Coming soon on mobile." />
+        <ActivityCard
+          title="Colour Critter Catch"
+          body="Match colour and shape clues, then save shape progress."
+          action="Play"
+          onPress={() => router.push("/games/colour-critter-catch")}
+        />
       </View>
     </ScrollView>
   );
