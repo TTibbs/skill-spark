@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
-const REFRESH_TOKEN_KEY = "skill-spark:refresh-token";
-const SELECTED_CHILD_KEY = "skill-spark:selected-child-id";
+const REFRESH_TOKEN_KEY = "skill-spark.refresh-token";
+const SELECTED_CHILD_KEY = "skill-spark.selected-child-id";
 
 export type RefreshTokenStorage = {
   getRefreshToken(): Promise<string | null>;
