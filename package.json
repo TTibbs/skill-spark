@@ -5,9 +5,12 @@
     "dev": "concurrently \"pnpm --filter @skill-spark/web dev\" \"pnpm --filter @skill-spark/backend dev\"",
     "dev:web": "pnpm --filter @skill-spark/web dev",
     "dev:backend": "pnpm --filter @skill-spark/backend dev",
-    "build": "pnpm --filter @skill-spark/contracts build && pnpm --filter @skill-spark/api-client build && pnpm --filter @skill-spark/backend build && pnpm --filter @skill-spark/web build",
-    "lint": "pnpm --filter @skill-spark/web lint",
-    "typecheck": "pnpm --filter @skill-spark/contracts typecheck && pnpm --filter @skill-spark/api-client typecheck && pnpm --filter @skill-spark/backend typecheck && pnpm --filter @skill-spark/web typecheck",
+    "mobile:start": "pnpm --filter @skill-spark/mobile start",
+    "mobile:build:dev:ios": "pnpm --filter @skill-spark/mobile exec eas build --profile development --platform ios",
+    "mobile:build:dev:android": "pnpm --filter @skill-spark/mobile exec eas build --profile development --platform android",
+    "build": "pnpm --filter @skill-spark/contracts build && pnpm --filter @skill-spark/api-client build && pnpm --filter @skill-spark/backend build && pnpm --filter @skill-spark/web build && pnpm --filter @skill-spark/mobile build",
+    "lint": "pnpm --filter @skill-spark/web lint && pnpm --filter @skill-spark/mobile lint",
+    "typecheck": "pnpm --filter @skill-spark/contracts typecheck && pnpm --filter @skill-spark/api-client typecheck && pnpm --filter @skill-spark/backend typecheck && pnpm --filter @skill-spark/web typecheck && pnpm --filter @skill-spark/mobile typecheck",
     "test": "pnpm --filter @skill-spark/backend test",
     "supabase:start": "pnpm exec supabase start",
     "supabase:stop": "pnpm exec supabase stop",
@@ -20,6 +23,8 @@
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
+    "eas-cli": "^21.4.0",
     "supabase": "2.75.0"
-  }
+  },
+  "packageManager": "pnpm@10.5.2"
 }

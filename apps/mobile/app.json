@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Skill Spark",
+    "slug": "skill-spark-mobile",
+    "scheme": "skillspark",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.skillspark.mobile"
+    },
+    "android": {
+      "package": "com.skillspark.mobile"
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

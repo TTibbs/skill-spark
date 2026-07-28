@@ -1,6 +1,6 @@
 # Skill Spark
 
-Skill Spark is a pnpm monorepo for the web app, backend API, shared contracts, and a future mobile app.
+Skill Spark is a pnpm monorepo for the web app, backend API, shared contracts, and Expo development-build mobile app.
 
 ## Structure
 
@@ -9,9 +9,10 @@ skill-spark/
 ├── apps/
 │   ├── web/        # Next.js frontend
 │   ├── backend/    # Express/PostgreSQL API
-│   └── mobile/     # Reserved for a future Expo app
+│   └── mobile/     # Expo development-build app
 ├── packages/
-│   └── contracts/  # Shared API-facing TypeScript types
+│   ├── contracts/  # Shared API-facing TypeScript types
+│   └── api-client/ # Framework-agnostic typed API client
 ├── package.json
 ├── pnpm-workspace.yaml
 └── README.md
@@ -20,6 +21,7 @@ skill-spark/
 ## Requirements
 
 - Node.js 20 or newer is recommended.
+- Expo SDK 57 expects Node.js 22.13 or newer for mobile work.
 - pnpm 9 or newer is recommended.
 - OrbStack must be running for local Supabase development. OrbStack provides the Docker-compatible container runtime used by the Supabase CLI.
 
@@ -64,6 +66,13 @@ Run only the backend:
 
 ```bash
 pnpm dev:backend
+```
+
+Start the Expo development-client Metro server after installing a development
+build on your device:
+
+```bash
+pnpm mobile:start
 ```
 
 ## Checks
@@ -116,11 +125,13 @@ Keep environment files scoped to each app:
 
 - `apps/web/.env.local`
 - `apps/backend/.env.local`
+- `apps/mobile/.env.local`
 
 Examples live beside each app:
 
 - `apps/web/.env.example`
 - `apps/backend/.env.example`
+- `apps/mobile/.env.example`
 
 Do not commit real secrets.
 
@@ -140,6 +151,50 @@ service keys local. Do not expose Supabase secret or service-role keys to the
 web app. The backend supports only `DATABASE_URL` for development/production and
 `TEST_DATABASE_URL` for tests; legacy split PostgreSQL variables are ignored by
 the application.
+
+For physical-device mobile testing, `apps/mobile/.env.local` must use the
+development machine's LAN IP, not `localhost`:
+
+```env
+EXPO_PUBLIC_API_URL=http://<development-machine-lan-ip>:8181/api
+```
+
+The mobile device and development machine must be reachable on the same network
+unless you use a tunnel or hosted API.
+
+## Mobile Development Build
+
+The mobile app uses Expo Router, NativeWind, `expo-dev-client`,
+`expo-secure-store`, and the shared API client. It uses explicit refresh-token
+mode for the Express API: refresh tokens are stored in SecureStore, access
+tokens stay in memory, and the selected child ID is stored in non-sensitive
+AsyncStorage.
+
+Expo Go is not the testing workflow for this app. Build and install a
+development client instead:
+
+```bash
+pnpm install
+pnpm --filter @skill-spark/mobile exec eas login
+pnpm --filter @skill-spark/mobile exec eas build:configure
+pnpm mobile:build:dev:ios
+```
+
+For Android:
+
+```bash
+pnpm mobile:build:dev:android
+```
+
+After the development build is installed on the device:
+
+```bash
+pnpm --filter @skill-spark/mobile start --dev-client
+```
+
+Do not run production EAS builds from this workflow until the app has been
+reviewed for production credentials, bundle identifiers, icons, and release
+configuration.
 
 ## Local Supabase
 
@@ -190,4 +245,5 @@ Production linking, remote schema pulls, remote pushes, migration repair, and ho
 
 - Deploy `apps/web` to Vercel.
 - Deploy `apps/backend` to Render.
-- Use `apps/mobile` for Expo/EAS later, after the mobile app is scaffolded.
+- Use `apps/mobile` for Expo/EAS development builds. Production EAS submission
+  remains a later release workflow.
