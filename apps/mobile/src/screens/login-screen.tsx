@@ -38,10 +38,12 @@ export function LoginScreen() {
       await login({ email: trimmedEmail, password });
       router.replace("/home");
     } catch (loginError) {
+      const developmentDetail =
+        __DEV__ && loginError instanceof Error ? ` ${loginError.message}` : "";
       setError(
         loginError instanceof ApiError
           ? "Invalid email or password."
-          : "Unable to log in right now."
+          : `Unable to log in right now.${developmentDetail}`
       );
     } finally {
       setIsSubmitting(false);
