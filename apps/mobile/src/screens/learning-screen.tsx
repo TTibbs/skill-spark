@@ -42,7 +42,12 @@ export function LearningScreen() {
           action="Play"
           onPress={() => router.push("/games/memory-match")}
         />
-        <ActivityCard title="Spelling Garden" body="Coming soon on mobile." />
+        <ActivityCard
+          title="Spelling Garden"
+          body="Type words from clues and save spelling progress."
+          action="Play"
+          onPress={() => router.push("/games/spelling-garden")}
+        />
         <ActivityCard title="Colour Critter Catch" body="Coming soon on mobile." />
       </View>
     </ScrollView>
