@@ -1,0 +1,25 @@
+{
+  "name": "skill-spark",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @skill-spark/web dev\" \"pnpm --filter @skill-spark/backend dev\"",
+    "dev:web": "pnpm --filter @skill-spark/web dev",
+    "dev:backend": "pnpm --filter @skill-spark/backend dev",
+    "build": "pnpm --filter @skill-spark/contracts build && pnpm --filter @skill-spark/api-client build && pnpm --filter @skill-spark/backend build && pnpm --filter @skill-spark/web build",
+    "lint": "pnpm --filter @skill-spark/web lint",
+    "typecheck": "pnpm --filter @skill-spark/contracts typecheck && pnpm --filter @skill-spark/api-client typecheck && pnpm --filter @skill-spark/backend typecheck && pnpm --filter @skill-spark/web typecheck",
+    "test": "pnpm --filter @skill-spark/backend test",
+    "supabase:start": "pnpm exec supabase start",
+    "supabase:stop": "pnpm exec supabase stop",
+    "supabase:status": "pnpm exec supabase status",
+    "db:reset": "pnpm exec supabase db reset",
+    "db:migration:new": "pnpm exec supabase migration new",
+    "db:types": "pnpm exec supabase gen types --lang typescript --local > packages/contracts/src/database.types.ts",
+    "env:local": "test -f apps/backend/.env.local || cp apps/backend/.env.example apps/backend/.env.local",
+    "test:backend:local": "pnpm exec supabase db reset && NODE_ENV=test TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55422/postgres pnpm --filter @skill-spark/backend exec jest --watchman=false --runInBand"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "supabase": "2.75.0"
+  }
+}
