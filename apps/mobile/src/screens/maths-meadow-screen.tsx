@@ -147,11 +147,7 @@ export function MathsMeadowScreen() {
 
       const currentQuestion = mathsState.questions[mathsState.currentIndex];
       const isCorrect = choice === currentQuestion?.answer;
-      void Haptics.notificationAsync(
-        isCorrect
-          ? Haptics.NotificationFeedbackType.Success
-          : Haptics.NotificationFeedbackType.Warning
-      );
+      void playAnswerHaptic(isCorrect);
       setMathsState(answerCurrentQuestion(mathsState, choice));
     },
     [mathsState]
@@ -459,6 +455,18 @@ function Panel({ children }: { children: React.ReactNode }) {
       {children}
     </View>
   );
+}
+
+async function playAnswerHaptic(isCorrect: boolean) {
+  try {
+    await Haptics.notificationAsync(
+      isCorrect
+        ? Haptics.NotificationFeedbackType.Success
+        : Haptics.NotificationFeedbackType.Warning
+    );
+  } catch {
+    // Haptics are optional; older development builds may not include the module.
+  }
 }
 
 function confirmLeave() {
