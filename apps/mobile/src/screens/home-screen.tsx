@@ -1,4 +1,5 @@
 import * as React from "react";
+import { router } from "expo-router";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "@/tw";
 import { useAuth } from "@/auth/use-auth";
 import { useChildren } from "@/children/use-children";
@@ -104,6 +105,27 @@ export function HomeScreen() {
             <Metric label="Level" value={selectedChild.level} />
             <Metric label="XP" value={selectedChild.xp} />
             <Metric label="Stars" value={selectedChild.reward_points} />
+          </View>
+
+          <View className="mt-8 gap-3">
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/chores")}
+              className="items-center rounded-2xl bg-[#315f4c] px-5 py-4"
+            >
+              <Text className="text-base font-black text-white">
+                Open chores
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/rewards")}
+              className="items-center rounded-2xl border border-[#c9d6ce] bg-white px-5 py-4"
+            >
+              <Text className="text-base font-black text-[#315f4c]">
+                Open rewards
+              </Text>
+            </Pressable>
           </View>
 
           {children.length > 1 ? (

@@ -86,6 +86,27 @@ export function ChildrenProvider({ children }: { children: React.ReactNode }) {
     [ownedChildren]
   );
 
+  const updateSelectedChildProgression = React.useCallback(
+    (progression: {
+      id: number;
+      xp: number;
+      level: number;
+      reward_points: number;
+    }) => {
+      setOwnedChildren((currentChildren) =>
+        currentChildren.map((child) =>
+          child.id === progression.id ? { ...child, ...progression } : child
+        )
+      );
+      setSelectedChild((currentChild) =>
+        currentChild?.id === progression.id
+          ? { ...currentChild, ...progression }
+          : currentChild
+      );
+    },
+    []
+  );
+
   const value = React.useMemo(
     () => ({
       children: ownedChildren,
@@ -94,8 +115,17 @@ export function ChildrenProvider({ children }: { children: React.ReactNode }) {
       error,
       reload: loadChildren,
       selectChild,
+      updateSelectedChildProgression,
     }),
-    [error, loadChildren, ownedChildren, selectChild, selectedChild, status]
+    [
+      error,
+      loadChildren,
+      ownedChildren,
+      selectChild,
+      selectedChild,
+      status,
+      updateSelectedChildProgression,
+    ]
   );
 
   return (

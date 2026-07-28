@@ -8,6 +8,12 @@ export type ChildrenContextValue = {
   error: string | null;
   reload(): Promise<void>;
   selectChild(childId: number): Promise<void>;
+  updateSelectedChildProgression(progression: {
+    id: number;
+    xp: number;
+    level: number;
+    reward_points: number;
+  }): void;
 };
 
 export const ChildrenContext = createContext<ChildrenContextValue | null>(null);

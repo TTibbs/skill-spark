@@ -38,6 +38,18 @@
   background-color: #315f4c;
 }
 
+.bg-\[\#9ab9a8\] {
+  background-color: #9ab9a8;
+}
+
+.bg-\[\#c9d6ce\] {
+  background-color: #c9d6ce;
+}
+
+.bg-\[\#e2efe8\] {
+  background-color: #e2efe8;
+}
+
 .bg-\[\#f7f2e8\] {
   background-color: #f7f2e8;
 }
@@ -56,6 +68,10 @@
 
 .border-\[\#c9d6ce\] {
   border-color: #c9d6ce;
+}
+
+.border-\[\#315f4c\] {
+  border-color: #315f4c;
 }
 
 .border-\[\#cbd8cf\] {
@@ -84,6 +100,10 @@
 
 .p-4 {
   padding: 16px;
+}
+
+.p-5 {
+  padding: 20px;
 }
 
 .p-6 {
@@ -150,6 +170,10 @@
 
 .mt-5 {
   margin-top: 20px;
+}
+
+.mt-6 {
+  margin-top: 24px;
 }
 
 .mt-8 {

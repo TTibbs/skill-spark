@@ -25,6 +25,8 @@ export default function AppLayout() {
     <ChildrenProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="home" />
+        <Stack.Screen name="chores" />
+        <Stack.Screen name="rewards" />
       </Stack>
     </ChildrenProvider>
   );
