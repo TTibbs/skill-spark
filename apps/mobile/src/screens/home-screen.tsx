@@ -110,10 +110,19 @@ export function HomeScreen() {
           <View className="mt-8 gap-3">
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push("/chores")}
+              onPress={() => router.push("/learn")}
               className="items-center rounded-2xl bg-[#315f4c] px-5 py-4"
             >
               <Text className="text-base font-black text-white">
+                Start learning
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/chores")}
+              className="items-center rounded-2xl border border-[#c9d6ce] bg-white px-5 py-4"
+            >
+              <Text className="text-base font-black text-[#315f4c]">
                 Open chores
               </Text>
             </Pressable>
