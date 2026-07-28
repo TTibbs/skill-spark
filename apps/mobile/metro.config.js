@@ -3,7 +3,11 @@ const { withNativewind } = require("nativewind/metro");
 
 const config = getDefaultConfig(__dirname);
 
-module.exports = withNativewind(config, {
+const nativewindConfig = withNativewind(config, {
   inlineVariables: false,
   globalClassNamePolyfill: false
 });
+
+nativewindConfig.transformerPath = require.resolve("./metro-transformer");
+
+module.exports = nativewindConfig;
