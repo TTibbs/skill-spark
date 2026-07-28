@@ -1,0 +1,1837 @@
+{
+  "description": "This is a list of all the available endpoints for the API",
+  "endpoints": {
+    "api_info": {
+      "description": "Provides information about the API's available endpoints.",
+      "endpoints": {
+        "GET /api": {
+          "description": "Serves up a json representation of all the available endpoints of the api"
+        }
+      }
+    },
+    "auth": {
+      "description": "Provides information about the authentication endpoints.",
+      "endpoints": {
+        "POST /api/auth/register": {
+          "description": "Registers a new user",
+          "exampleRequest": {
+            "username": "newuser123",
+            "email": "newuser@example.com",
+            "password": "password123"
+          },
+          "exampleResponse": {
+            "status": "success",
+            "data": {
+              "user": {
+                "id": 1,
+                "username": "newuser123",
+                "email": "newuser@example.com"
+              }
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Validation error",
+              "example": {
+                "status": "error",
+                "errors": [
+                  {
+                    "message": "Username must be between 3 and 30 characters"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "POST /api/auth/login": {
+          "description": "Authenticates a user and returns tokens. Use refreshTokenMode=\"cookie\" for web clients so the refresh token is set as an HTTP-only cookie and omitted from JSON. Use refreshTokenMode=\"explicit\" for non-browser clients that manage secure token storage.",
+          "exampleRequest": {
+            "username": "alice123",
+            "password": "password123",
+            "refreshTokenMode": "cookie"
+          },
+          "exampleResponse": {
+            "status": "success",
+            "data": {
+              "user": {
+                "id": 1,
+                "username": "alice123",
+                "email": "alice@example.com"
+              },
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Missing required fields",
+              "example": {
+                "status": "error",
+                "errors": [
+                  {
+                    "message": "Either username or email is required"
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Invalid credentials",
+              "example": {
+                "message": "Invalid email or password"
+              }
+            },
+            "429": {
+              "description": "Too many login attempts",
+              "example": {
+                "message": "Too many login attempts, please try again in 5 minutes."
+              }
+            }
+          }
+        },
+        "POST /api/auth/refresh-token": {
+          "description": "Refreshes the access token using a valid refresh token and rotates the refresh-token session. Web clients use the HTTP-only cookie plus refreshTokenMode=\"cookie\"; explicit clients send refreshToken and refreshTokenMode=\"explicit\".",
+          "exampleRequest": {
+            "refreshTokenMode": "cookie"
+          },
+          "exampleResponse": {
+            "status": "success",
+            "data": {
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Missing refresh token",
+              "example": {
+                "status": "error",
+                "errors": [
+                  {
+                    "message": "Refresh token is required"
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Invalid or expired refresh token",
+              "example": {
+                "status": "error",
+                "message": "Invalid or expired refresh token"
+              }
+            }
+          }
+        },
+        "POST /api/auth/logout": {
+          "description": "Logs out a user by invalidating their refresh token",
+          "exampleRequest": {
+            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "exampleResponse": {
+            "message": "Logged out successfully"
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Missing refresh token",
+              "example": {
+                "status": "error",
+                "errors": [
+                  {
+                    "message": "Refresh token is required"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "POST /api/auth/forgot-password": {
+          "description": "Requests a single-use password reset token and always returns a generic response",
+          "exampleRequest": {
+            "email": "alice@example.com"
+          },
+          "exampleResponse": {
+            "message": "If your account exists, a password reset has been processed"
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Missing required fields or invalid request",
+              "example": {
+                "message": "Either username or email is required"
+              }
+            }
+          }
+        },
+        "POST /api/auth/reset-password": {
+          "description": "Resets a password with a single-use reset token and revokes existing refresh-token sessions",
+          "exampleRequest": {
+            "token": "raw-reset-token-from-email-link",
+            "newPassword": "new-password123"
+          },
+          "exampleResponse": {
+            "message": "Password reset successfully"
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Missing fields, invalid token, expired token or consumed token",
+              "example": {
+                "message": "Invalid or expired reset token"
+              }
+            }
+          }
+        }
+      }
+    },
+    "users": {
+      "description": "Provides information about the users endpoints.",
+      "endpoints": {
+        "GET /api/users": {
+          "description": "Serves up a json representation of all the users",
+          "exampleResponse": {
+            "users": [
+              {
+                "id": 1,
+                "username": "alice123",
+                "display_name": "Alice",
+                "email": "alice@example.com",
+                "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+                "is_parent": true,
+                "total_children": 2,
+                "timezone": "GMT",
+                "user_preferences": {
+                  "theme": "dark",
+                  "has_pin": true,
+                  "language": "en",
+                  "notificationsEnabled": false
+                },
+                "created_at": "2025-07-07T23:44:19.244Z",
+                "updated_at": "2025-07-08T00:33:30.645Z"
+              },
+              {
+                "id": 2,
+                "username": "bob123",
+                "display_name": "Bob",
+                "email": "bob@example.com",
+                "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+                "is_parent": true,
+                "total_children": 1,
+                "timezone": "UTC",
+                "user_preferences": {
+                  "theme": "dark",
+                  "has_pin": true,
+                  "language": "en",
+                  "notificationsEnabled": true
+                },
+                "created_at": "2025-07-07T23:44:19.244Z",
+                "updated_at": "2025-07-07T23:44:19.244Z"
+              },
+              {
+                "id": 3,
+                "username": "charlie123",
+                "display_name": "Charlie",
+                "email": "charlie@example.com",
+                "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+                "is_parent": true,
+                "total_children": 1,
+                "timezone": "Europe/London",
+                "user_preferences": {
+                  "theme": "system",
+                  "has_pin": true,
+                  "language": "en",
+                  "notificationsEnabled": true
+                },
+                "created_at": "2025-07-07T23:44:19.244Z",
+                "updated_at": "2025-07-07T23:44:19.244Z"
+              },
+              {
+                "id": 4,
+                "username": "dave123",
+                "display_name": "Dave",
+                "email": "dave@example.com",
+                "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+                "is_parent": false,
+                "total_children": 0,
+                "timezone": "Europe/London",
+                "user_preferences": {
+                  "theme": "system",
+                  "has_pin": true,
+                  "language": "en",
+                  "notificationsEnabled": true
+                },
+                "created_at": "2025-07-07T23:44:19.244Z",
+                "updated_at": "2025-07-07T23:44:19.244Z"
+              }
+            ],
+            "total_users": 4
+          },
+          "authNeeded": true
+        },
+        "GET /api/users/username/:username": {
+          "description": "Serves up a json representation of a user by username",
+          "exampleResponse": {
+            "user": {
+              "id": 1,
+              "username": "alice123",
+              "display_name": "Alice",
+              "email": "alice@example.com",
+              "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+              "is_parent": true,
+              "total_children": 2,
+              "timezone": "GMT",
+              "user_preferences": {
+                "theme": "dark",
+                "has_pin": true,
+                "language": "en",
+                "notificationsEnabled": false
+              },
+              "created_at": "2025-07-07T23:44:19.244Z",
+              "updated_at": "2025-07-08T00:33:30.645Z"
+            }
+          },
+          "errorResponses": {
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/users/email/:email": {
+          "description": "Serves up a json representation of a user by email",
+          "exampleResponse": {
+            "user": {
+              "id": 1,
+              "username": "alice123",
+              "display_name": "Alice",
+              "email": "alice@example.com",
+              "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+              "is_parent": true,
+              "total_children": 2,
+              "timezone": "GMT",
+              "user_preferences": {
+                "theme": "dark",
+                "has_pin": true,
+                "language": "en",
+                "notificationsEnabled": false
+              },
+              "created_at": "2025-07-07T23:44:19.244Z",
+              "updated_at": "2025-07-08T00:33:30.645Z"
+            }
+          },
+          "errorResponses": {
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/users/:id": {
+          "description": "Serves up a json representation of a user by id",
+          "exampleResponse": {
+            "user": {
+              "id": 1,
+              "username": "alice123",
+              "display_name": "Alice",
+              "email": "alice@example.com",
+              "profile_image_url": "https://c5znixeqj7.ufs.sh/f/Jf9D0EOZjwR5r72WKKh4ScXJ607ewstvO3u2GfKimQM8hUFz",
+              "is_parent": true,
+              "total_children": 2,
+              "timezone": "GMT",
+              "user_preferences": {
+                "theme": "dark",
+                "has_pin": true,
+                "language": "en",
+                "notificationsEnabled": false
+              },
+              "created_at": "2025-07-07T23:44:19.244Z",
+              "updated_at": "2025-07-08T00:33:30.645Z"
+            }
+          },
+          "errorResponses": {
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "PATCH /api/users/:id": {
+          "description": "Updates a user by id",
+          "exampleResponse": {
+            "updatedUser": {
+              "id": 1,
+              "username": "updated_alice",
+              "display_name": "Updated Alice",
+              "email": "updated_alice@example.com",
+              "profile_image_url": "https://example.com/updated_alice.jpg",
+              "is_parent": true,
+              "total_children": 0,
+              "timezone": "Europe/London",
+              "user_preferences": {
+                "theme": "dark",
+                "has_pin": true,
+                "language": "en"
+              },
+              "created_at": "2025-07-08T04:14:31.206Z",
+              "updated_at": "2025-07-08T04:14:31.295Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Username must be a string"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "DELETE /api/users/:id": {
+          "description": "Deletes a user by id",
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/users/me/pin": {
+          "description": "Sets or replaces the authenticated user's parent PIN. The PIN is stored as a salted hash and never returned.",
+          "exampleRequest": {
+            "pin": "0123"
+          },
+          "exampleResponse": {
+            "status": "success",
+            "data": {
+              "user_preferences": {
+                "theme": "dark",
+                "has_pin": true,
+                "language": "en",
+                "notificationsEnabled": false
+              }
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid PIN format"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/users/me/pin/verify": {
+          "description": "Verifies the authenticated user's parent PIN without exposing the stored hash.",
+          "exampleRequest": {
+            "pin": "0123"
+          },
+          "exampleResponse": {
+            "status": "success",
+            "data": {
+              "verified": true
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid PIN format"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            }
+          },
+          "authNeeded": true
+        },
+        "DELETE /api/users/me/pin": {
+          "description": "Removes the authenticated user's parent PIN.",
+          "exampleResponse": {
+            "status": "success",
+            "data": {
+              "user_preferences": {
+                "theme": "dark",
+                "has_pin": false,
+                "language": "en",
+                "notificationsEnabled": false
+              }
+            }
+          },
+          "errorResponses": {
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/users/:id/children": {
+          "description": "Serves up a json representation of all the child profiles for a user",
+          "exampleResponse": {
+            "children": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "name": "Emma",
+                "age": 5,
+                "xp": 150,
+                "level": 2,
+                "reward_points": 100,
+                "last_played": "2025-07-08T04:18:04.238Z",
+                "created_at": "2025-07-08T04:18:04.326Z",
+                "updated_at": "2025-07-08T04:18:04.326Z"
+              },
+              {
+                "id": 2,
+                "user_id": 1,
+                "name": "Liam",
+                "age": 3,
+                "xp": 75,
+                "level": 1,
+                "reward_points": 0,
+                "last_played": "2025-07-08T04:18:04.238Z",
+                "created_at": "2025-07-08T04:18:04.326Z",
+                "updated_at": "2025-07-08T04:18:04.326Z"
+              }
+            ]
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID"
+            },
+            "403": {
+              "description": "User is not a parent"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/users/:id/children/:childId": {
+          "description": "Serves up a json representation of a child profile by id",
+          "exampleResponse": {
+            "childProfile": {
+              "id": 1,
+              "user_id": 1,
+              "name": "Emma",
+              "age": 5,
+              "xp": 150,
+              "level": 2,
+              "reward_points": 100,
+              "last_played": "2025-07-08T04:20:36.384Z",
+              "created_at": "2025-07-08T04:20:36.466Z",
+              "updated_at": "2025-07-08T04:20:36.466Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/users/:id/children": {
+          "description": "Creates a new child profile for a user",
+          "exampleResponse": {
+            "newChildProfile": {
+              "id": 5,
+              "user_id": 1,
+              "name": "Test Child",
+              "age": 5,
+              "xp": 0,
+              "level": 1,
+              "reward_points": 0,
+              "last_played": null,
+              "created_at": "2025-07-08T04:19:34.146Z",
+              "updated_at": "2025-07-08T04:19:34.146Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child data"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "PATCH /api/users/:id/children/:childId": {
+          "description": "Updates a child profile by id",
+          "exampleResponse": {
+            "updatedChildProfile": {
+              "id": 1,
+              "user_id": 1,
+              "name": "Updated Name",
+              "age": 5,
+              "xp": 150,
+              "level": 2,
+              "reward_points": 100,
+              "last_played": "2025-07-08T04:21:40.671Z",
+              "created_at": "2025-07-08T04:21:40.746Z",
+              "updated_at": "2025-07-08T04:21:40.746Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "DELETE /api/users/:id/children/:childId": {
+          "description": "Deletes a child profile by id",
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        }
+      }
+    },
+    "childProfile": {
+      "description": "Provides information about the child stats endpoints.",
+      "endpoints": {
+        "GET /api/children/:childId/stats": {
+          "description": "Serves up a json representation of a child's overall stats",
+          "exampleResponse": {
+            "childStats": {
+              "mathStats": {
+                "stats": {
+                  "addition": { "correct": 1, "accuracy": 100, "incorrect": 0 },
+                  "counting": { "correct": 1, "accuracy": 100, "incorrect": 0 },
+                  "division": { "correct": 0, "accuracy": 0, "incorrect": 0 },
+                  "subtraction": {
+                    "correct": 1,
+                    "accuracy": 100,
+                    "incorrect": 0
+                  },
+                  "totalProblems": 4,
+                  "correctAnswers": 4,
+                  "multiplication": {
+                    "correct": 1,
+                    "accuracy": 100,
+                    "incorrect": 0
+                  },
+                  "overallAccuracy": 100,
+                  "incorrectAnswers": 0
+                },
+                "child_id": 1,
+                "created_at": "2025-07-08T04:28:07.219Z",
+                "updated_at": "2025-07-08T04:28:07.219Z"
+              },
+              "spellingStats": {
+                "stats": {
+                  "accuracy": 75,
+                  "total_hints_used": 5,
+                  "total_learned_words": 4,
+                  "total_correct_guesses": 15,
+                  "total_incorrect_guesses": 5
+                },
+                "child_id": 1,
+                "learned_words": [
+                  {
+                    "word_id": 1,
+                    "word": "Dog",
+                    "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZSDfQx8alJebwp2xlgqY3jMGVs7hdF0mc6KkyQ",
+                    "category": "Animals",
+                    "learned_at": "2025-06-01T13:40:00+01:00",
+                    "times_learned": 1
+                  },
+                  {
+                    "word_id": 2,
+                    "word": "Cat",
+                    "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZSD1puuslJebwp2xlgqY3jMGVs7hdF0mc6KkyQ",
+                    "category": "Animals",
+                    "learned_at": "2025-06-01T13:30:00+01:00",
+                    "times_learned": 1
+                  },
+                  {
+                    "word_id": 4,
+                    "word": "Lion",
+                    "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZS2JXiWA1M4vrZwxQ0N1yhuKXDkFBT9qPA3dsf",
+                    "category": "Animals",
+                    "learned_at": "2025-06-01T13:40:00+01:00",
+                    "times_learned": 1
+                  },
+                  {
+                    "word_id": 5,
+                    "word": "Tiger",
+                    "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZSjg0aUxnhsGFjivqmwBAdUOJTr7RLVucZ2EIH",
+                    "category": "Animals",
+                    "learned_at": "2025-06-01T13:50:00+01:00",
+                    "times_learned": 1
+                  }
+                ]
+              },
+              "shapeStats": {
+                "stats": {
+                  "totalGames": 4,
+                  "totalShapes": 8,
+                  "bestTimeSecs": 80,
+                  "totalTimeSecs": 120,
+                  "overallAccuracy": 100,
+                  "totalCorrectShapes": 8,
+                  "totalIncorrectShapes": 0
+                },
+                "child_id": 1,
+                "updated_at": "2025-07-08T04:28:07.220Z"
+              },
+              "memoryStats": {
+                "stats": {
+                  "sound": {
+                    "totalMoves": 9,
+                    "fewestMoves": 7,
+                    "gamesPlayed": 2,
+                    "bestTimeSecs": 55,
+                    "totalTimeSecs": 120
+                  },
+                  "picture": {
+                    "totalMoves": 8,
+                    "fewestMoves": 3,
+                    "gamesPlayed": 2,
+                    "bestTimeSecs": 50,
+                    "totalTimeSecs": 110
+                  },
+                  "totalGames": 4,
+                  "totalMoves": 17,
+                  "fewestMoves": 3,
+                  "bestTimeSecs": 50,
+                  "totalTimeSecs": 230
+                },
+                "child_id": 1,
+                "updated_at": "2025-07-08T04:28:07.220Z"
+              }
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/children/:childId/stats/math": {
+          "description": "Serves up a json representation of a child's math stats",
+          "exampleResponse": {
+            "mathStats": {
+              "stats": {
+                "addition": { "correct": 1, "accuracy": 100, "incorrect": 0 },
+                "counting": { "correct": 1, "accuracy": 100, "incorrect": 0 },
+                "division": { "correct": 0, "accuracy": 0, "incorrect": 0 },
+                "subtraction": {
+                  "correct": 1,
+                  "accuracy": 100,
+                  "incorrect": 0
+                },
+                "totalProblems": 4,
+                "correctAnswers": 4,
+                "multiplication": {
+                  "correct": 1,
+                  "accuracy": 100,
+                  "incorrect": 0
+                },
+                "overallAccuracy": 100,
+                "incorrectAnswers": 0
+              },
+              "child_id": 1,
+              "created_at": "2025-07-08T04:29:48.875Z",
+              "updated_at": "2025-07-08T04:29:48.875Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/stats/math": {
+          "description": "Updates a child's math stats",
+          "exampleRequests": [
+            {
+              "correct": 6,
+              "incorrect": 0,
+              "timeSpent": 30,
+              "type": "addition"
+            },
+            {
+              "correct": 6,
+              "incorrect": 0,
+              "timeSpent": 30,
+              "type": "subtraction"
+            },
+            {
+              "correct": 6,
+              "incorrect": 0,
+              "timeSpent": 30,
+              "type": "multiplication"
+            },
+            {
+              "correct": 6,
+              "incorrect": 0,
+              "timeSpent": 30,
+              "type": "division"
+            },
+            {
+              "correct": 6,
+              "incorrect": 0,
+              "timeSpent": 30,
+              "type": "counting"
+            }
+          ],
+          "exampleResponse": {
+            "child": {
+              "id": 1,
+              "user_id": 1,
+              "name": "Emma",
+              "age": 5,
+              "xp": 330,
+              "level": 2,
+              "reward_points": 200,
+              "last_played": "2025-07-08T04:33:25.946Z",
+              "created_at": "2025-07-08T04:33:25.843Z",
+              "updated_at": "2025-07-08T04:33:25.843Z"
+            },
+            "stats": {
+              "addition": { "correct": 7, "incorrect": 0, "accuracy": 100 },
+              "counting": { "correct": 1, "accuracy": 100, "incorrect": 0 },
+              "division": { "correct": 0, "accuracy": 0, "incorrect": 0 },
+              "subtraction": { "correct": 1, "accuracy": 100, "incorrect": 0 },
+              "totalProblems": 10,
+              "correctAnswers": 10,
+              "multiplication": {
+                "correct": 1,
+                "accuracy": 100,
+                "incorrect": 0
+              },
+              "overallAccuracy": 100,
+              "incorrectAnswers": 0
+            },
+            "xpEarned": 80,
+            "message": "Math stats updated and achievements checked",
+            "completedAchievements": [
+              {
+                "id": 2,
+                "title": "Solve 5 math problems",
+                "description": "Solve 5 math problems today",
+                "required_problems": 5,
+                "xp_reward": 100,
+                "points_reward": 100,
+                "is_active": true,
+                "image_url": "https://example.com/image.png",
+                "category": "math",
+                "is_special": false,
+                "created_at": "2025-07-08T04:33:25.847Z",
+                "updated_at": "2025-07-08T04:33:25.847Z",
+                "is_achieved": true
+              }
+            ]
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/children/:childId/stats/spelling": {
+          "description": "Serves up a json representation of a child's spelling stats",
+          "exampleResponse": {
+            "stats": {
+              "accuracy": 75,
+              "total_hints_used": 5,
+              "total_learned_words": 4,
+              "total_correct_guesses": 15,
+              "total_incorrect_guesses": 5
+            },
+            "child_id": 1,
+            "learned_words": [
+              {
+                "word_id": 1,
+                "word": "Dog",
+                "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZSDfQx8alJebwp2xlgqY3jMGVs7hdF0mc6KkyQ",
+                "category": "Animals",
+                "learned_at": "2025-06-01T13:40:00+01:00",
+                "times_learned": 1
+              },
+              {
+                "word_id": 2,
+                "word": "Cat",
+                "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZSD1puuslJebwp2xlgqY3jMGVs7hdF0mc6KkyQ",
+                "category": "Animals",
+                "learned_at": "2025-06-01T13:30:00+01:00",
+                "times_learned": 1
+              },
+              {
+                "word_id": 4,
+                "word": "Lion",
+                "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZS2JXiWA1M4vrZwxQ0N1yhuKXDkFBT9qPA3dsf",
+                "category": "Animals",
+                "learned_at": "2025-06-01T13:40:00+01:00",
+                "times_learned": 1
+              },
+              {
+                "word_id": 5,
+                "word": "Tiger",
+                "image": "https://dtsjrc96mj.ufs.sh/f/E1OdRdSFWCZSjg0aUxnhsGFjivqmwBAdUOJTr7RLVucZ2EIH",
+                "category": "Animals",
+                "learned_at": "2025-06-01T13:50:00+01:00",
+                "times_learned": 1
+              }
+            ]
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/stats/spelling/:wordId": {
+          "description": "Updates a child's spelling stats",
+          "exampleRequest": {
+            "correct_attempts": 2,
+            "total_attempts": 2,
+            "timeSpent": 10,
+            "hintsUsed": 0
+          },
+          "exampleResponse": {
+            "child": {
+              "id": 1,
+              "user_id": 1,
+              "name": "Emma",
+              "xp": 475,
+              "level": 2,
+              "reward_points": 200,
+              "last_played": "2025-06-12T13:48:52.745Z",
+              "created_at": "2025-06-12T13:48:52.683Z",
+              "updated_at": "2025-06-12T13:48:52.683Z"
+            },
+            "stats": {
+              "user_id": 1,
+              "child_id": 1,
+              "total_attempts": 5,
+              "correct_attempts": 5,
+              "accuracy": "100",
+              "total_learned_words": 5,
+              "created_at": "2025-06-12T13:48:52.686Z",
+              "updated_at": "2025-06-12T13:48:52.745Z"
+            },
+            "completedAchievements": [
+              {
+                "id": 1,
+                "title": "Spelling 5 words",
+                "description": "Spelling 5 words",
+                "required_problems": 5,
+                "xp_reward": 100,
+                "points_reward": 100,
+                "is_active": true,
+                "image_url": "https://example.com/image.png",
+                "category": "spelling",
+                "is_daily": true,
+                "is_weekly": false,
+                "is_monthly": false,
+                "is_yearly": false,
+                "is_special": false,
+                "is_achieved": false,
+                "created_at": "2025-06-12T13:48:52.687Z",
+                "updated_at": "2025-06-12T13:48:52.687Z"
+              }
+            ],
+            "message": "Spelling stats and XP updated successfully"
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID or word ID or spelling result data"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or word not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/children/:childId/stats/memory": {
+          "description": "Serves up a json representation of a child's memory stats",
+          "exampleResponse": {
+            "memoryStats": {
+              "stats": {
+                "sound": {
+                  "totalMoves": 9,
+                  "fewestMoves": 7,
+                  "gamesPlayed": 2,
+                  "bestTimeSecs": 55,
+                  "totalTimeSecs": 120
+                },
+                "picture": {
+                  "totalMoves": 8,
+                  "fewestMoves": 3,
+                  "gamesPlayed": 2,
+                  "bestTimeSecs": 50,
+                  "totalTimeSecs": 110
+                },
+                "totalGames": 4,
+                "totalMoves": 17,
+                "fewestMoves": 3,
+                "bestTimeSecs": 50,
+                "totalTimeSecs": 230
+              },
+              "child_id": 1,
+              "updated_at": "2025-07-08T04:35:09.779Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/stats/memory": {
+          "description": "Updates a child's memory stats",
+          "exampleRequests": [
+            {
+              "totalMoves": 10,
+              "timeSpent": 45,
+              "type": "picture"
+            },
+            {
+              "totalMoves": 10,
+              "timeSpent": 45,
+              "type": "sound"
+            }
+          ],
+          "exampleResponse": {
+            "child": {
+              "id": 1,
+              "user_id": 1,
+              "name": "Emma",
+              "age": 5,
+              "xp": 320,
+              "level": 3,
+              "reward_points": 200,
+              "last_played": "2025-07-08T04:37:32.823Z",
+              "created_at": "2025-07-08T04:37:32.757Z",
+              "updated_at": "2025-07-08T04:37:32.757Z"
+            },
+            "stats": {
+              "sound": {
+                "totalMoves": 9,
+                "fewestMoves": 7,
+                "gamesPlayed": 2,
+                "bestTimeSecs": 55,
+                "totalTimeSecs": 120
+              },
+              "picture": {
+                "totalMoves": 18,
+                "fewestMoves": 3,
+                "gamesPlayed": 3,
+                "bestTimeSecs": 35,
+                "totalTimeSecs": 145
+              },
+              "totalGames": 5,
+              "totalMoves": 27,
+              "fewestMoves": 3,
+              "bestTimeSecs": 35,
+              "totalTimeSecs": 265
+            },
+            "xpEarned": 70,
+            "message": "Memory stats updated and achievements checked",
+            "completedAchievements": [
+              {
+                "id": 4,
+                "title": "Finish 5 memory games",
+                "description": "Finish 5 memory games today",
+                "required_problems": 5,
+                "xp_reward": 100,
+                "points_reward": 100,
+                "is_active": true,
+                "image_url": "https://example.com/image.png",
+                "category": "memory",
+                "is_special": false,
+                "created_at": "2025-07-08T04:37:32.758Z",
+                "updated_at": "2025-07-08T04:37:32.758Z",
+                "is_achieved": true
+              }
+            ]
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/children/:childId/stats/shapes": {
+          "description": "Serves up a json representation of a child's shape stats",
+          "exampleResponse": {
+            "stats": {
+              "totalGames": 4,
+              "totalShapes": 8,
+              "bestTimeSecs": 80,
+              "totalTimeSecs": 120,
+              "overallAccuracy": 100,
+              "totalCorrectShapes": 8,
+              "totalIncorrectShapes": 0
+            },
+            "child_id": 1,
+            "updated_at": "2025-07-08T04:38:50.948Z"
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/stats/shapes": {
+          "description": "Updates a child's shape stats",
+          "exampleRequest": {
+            "incorrect": 14,
+            "correct": 14,
+            "timeSpent": 35
+          },
+          "exampleResponse": {
+            "child": {
+              "id": 1,
+              "user_id": 1,
+              "name": "Emma",
+              "age": 5,
+              "xp": 600,
+              "level": 4,
+              "reward_points": 400,
+              "last_played": "2025-07-08T04:42:43.198Z",
+              "created_at": "2025-07-08T04:42:43.091Z",
+              "updated_at": "2025-07-08T04:42:43.091Z"
+            },
+            "stats": {
+              "totalGames": 5,
+              "totalShapes": 20,
+              "bestTimeSecs": 35,
+              "totalTimeSecs": 155,
+              "overallAccuracy": 100,
+              "totalCorrectShapes": 20,
+              "totalIncorrectShapes": 0
+            },
+            "xpEarned": 150,
+            "message": "Shape stats updated and achievements checked",
+            "completedAchievements": [
+              {
+                "id": 3,
+                "title": "Identify 5 shapes",
+                "description": "Identify 5 shapes today",
+                "required_problems": 5,
+                "xp_reward": 100,
+                "points_reward": 100,
+                "is_active": true,
+                "image_url": "https://example.com/image.png",
+                "category": "shapes",
+                "is_special": false,
+                "is_hidden": false,
+                "created_at": "2025-07-08T04:42:43.092Z",
+                "updated_at": "2025-07-08T04:42:43.092Z",
+                "is_achieved": true
+              },
+              {
+                "id": 7,
+                "title": "Shape Detective",
+                "description": "Identify 20 shapes this week",
+                "required_problems": 20,
+                "xp_reward": 200,
+                "points_reward": 200,
+                "is_active": true,
+                "image_url": "https://example.com/weekly-shapes.png",
+                "category": "shapes",
+                "is_special": false,
+                "is_hidden": false,
+                "created_at": "2025-07-08T04:42:43.092Z",
+                "updated_at": "2025-07-08T04:42:43.092Z",
+                "is_achieved": true
+              }
+            ]
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/children/:childId/chores": {
+          "description": "Serves up a json representation of a child's assigned chores",
+          "exampleResponse": {
+            "assignedChore": {
+              "id": 1,
+              "is_completed": false,
+              "assigned_at": "2025-07-08T05:44:07.308Z",
+              "completed_at": null,
+              "completion_count": 0,
+              "last_completed_at": null,
+              "total_xp_earned": 0,
+              "title": "Make Bed",
+              "description": "Make your bed neatly",
+              "category": "Home",
+              "xp": 10,
+              "created_at": "2025-07-08T05:44:07.222Z",
+              "updated_at": "2025-07-08T05:44:07.222Z",
+              "child_chore_id": 1
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "Child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/chores/assign/:choreId": {
+          "description": "Assigns a chore to a child",
+          "exampleResponse": {
+            "id": 1,
+            "is_completed": false,
+            "assigned_at": "2025-07-08T05:40:14.856Z",
+            "completed_at": null,
+            "completion_count": 0,
+            "last_completed_at": null,
+            "total_xp_earned": 0,
+            "title": "Make Bed",
+            "description": "Make your bed neatly",
+            "category": "Home",
+            "xp": 10,
+            "created_at": "2025-07-08T05:40:14.772Z",
+            "updated_at": "2025-07-08T05:40:14.772Z",
+            "child_chore_id": 1
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid child ID or chore ID or chore already assigned to child"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "Child not found or chore not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/chores/:assignmentId/submit": {
+          "description": "Marks an assigned or rejected chore assignment as submitted for parent review. This does not award XP or stars.",
+          "exampleResponse": {
+            "assignment": {
+              "id": 1,
+              "chore_id": 1,
+              "child_id": 1,
+              "status": "submitted",
+              "assigned_xp_reward": 10,
+              "assigned_reward_points": 2,
+              "awarded_xp": 0,
+              "awarded_reward_points": 0
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/chores/:assignmentId/approve": {
+          "description": "Approves a submitted chore assignment and transactionally awards the server-owned reward snapshot once.",
+          "exampleResponse": {
+            "assignment": {
+              "id": 1,
+              "status": "approved",
+              "awarded_xp": 10,
+              "awarded_reward_points": 2
+            },
+            "progression": {
+              "xp": 190,
+              "level": 2,
+              "reward_points": 102
+            },
+            "awarded": {
+              "xp": 10,
+              "reward_points": 2
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/chores/:assignmentId/reject": {
+          "description": "Rejects a submitted chore assignment with an optional short reason. This does not award XP or stars.",
+          "exampleRequest": {
+            "reason": "Please finish putting the books away."
+          },
+          "exampleResponse": {
+            "assignment": {
+              "id": 1,
+              "status": "rejected",
+              "rejection_reason": "Please finish putting the books away."
+            }
+          },
+          "authNeeded": true
+        },
+        "DELETE /api/children/:childId/chores/:assignmentId": {
+          "description": "Removes an assigned or rejected chore assignment without deleting the shared chore definition or approved history.",
+          "authNeeded": true
+        }
+      }
+    },
+    "familyRewards": {
+      "description": "Parent-created family rewards and child redemption requests. Stars are deducted when a request is created, and rejected or cancelled requests refund once.",
+      "endpoints": {
+        "GET /api/rewards": {
+          "description": "Lists the authenticated parent's non-archived family rewards",
+          "exampleResponse": {
+            "rewards": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "title": "Choose movie night",
+                "description": "Pick the family film for the evening.",
+                "star_cost": 20,
+                "image_url": null,
+                "is_active": true,
+                "archived_at": null,
+                "created_at": "2026-07-28T00:00:00.000Z",
+                "updated_at": "2026-07-28T00:00:00.000Z"
+              }
+            ]
+          },
+          "authNeeded": true
+        },
+        "POST /api/rewards": {
+          "description": "Creates a parent-owned family reward",
+          "exampleRequest": {
+            "title": "Extra story time",
+            "description": "Add one extra story before bed.",
+            "star_cost": 12,
+            "is_active": true
+          },
+          "exampleResponse": {
+            "reward": {
+              "id": 2,
+              "user_id": 1,
+              "title": "Extra story time",
+              "description": "Add one extra story before bed.",
+              "star_cost": 12,
+              "image_url": null,
+              "is_active": true,
+              "archived_at": null,
+              "created_at": "2026-07-28T00:00:00.000Z",
+              "updated_at": "2026-07-28T00:00:00.000Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid title or star cost"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            }
+          },
+          "authNeeded": true
+        },
+        "PATCH /api/rewards/:rewardId": {
+          "description": "Updates an authenticated parent's family reward",
+          "exampleRequest": {
+            "title": "Updated reward",
+            "star_cost": 18,
+            "is_active": false
+          },
+          "exampleResponse": {
+            "reward": {
+              "id": 2,
+              "user_id": 1,
+              "title": "Updated reward",
+              "description": "Add one extra story before bed.",
+              "star_cost": 18,
+              "image_url": null,
+              "is_active": false,
+              "archived_at": null,
+              "created_at": "2026-07-28T00:00:00.000Z",
+              "updated_at": "2026-07-28T00:00:00.000Z"
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid reward ID or reward data"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "404": {
+              "description": "Reward not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "DELETE /api/rewards/:rewardId": {
+          "description": "Archives an authenticated parent's family reward",
+          "errorResponses": {
+            "400": {
+              "description": "Invalid reward ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "404": {
+              "description": "Reward not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/children/:childId/reward-redemptions": {
+          "description": "Lists reward redemption requests for one owned child",
+          "exampleResponse": {
+            "redemptions": [
+              {
+                "id": 1,
+                "reward_id": 1,
+                "child_id": 1,
+                "user_id": 1,
+                "status": "requested",
+                "reward_title": "Choose movie night",
+                "reward_description": "Pick the family film for the evening.",
+                "star_cost": 20,
+                "requested_at": "2026-07-28T00:00:00.000Z",
+                "reviewed_at": null,
+                "reviewed_by": null,
+                "cancelled_at": null,
+                "rejection_reason": null,
+                "refunded_at": null,
+                "created_at": "2026-07-28T00:00:00.000Z",
+                "updated_at": "2026-07-28T00:00:00.000Z"
+              }
+            ]
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/reward-redemptions": {
+          "description": "Creates a redemption request and deducts the reward's star cost once",
+          "exampleRequest": {
+            "rewardId": 1
+          },
+          "exampleResponse": {
+            "redemption": {
+              "id": 1,
+              "status": "requested",
+              "reward_title": "Choose movie night",
+              "star_cost": 20
+            },
+            "child": {
+              "id": 1,
+              "xp": 120,
+              "level": 2,
+              "reward_points": 25
+            }
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid request or not enough stars"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "404": {
+              "description": "Child or reward not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/reward-redemptions/:requestId/approve": {
+          "description": "Approves a requested redemption without deducting stars again",
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/reward-redemptions/:requestId/reject": {
+          "description": "Rejects a requested redemption and refunds its snapshotted star cost once",
+          "exampleRequest": {
+            "reason": "Let us save this for another weekend."
+          },
+          "authNeeded": true
+        },
+        "POST /api/children/:childId/reward-redemptions/:requestId/cancel": {
+          "description": "Cancels a requested redemption and refunds its snapshotted star cost once",
+          "authNeeded": true
+        }
+      }
+    },
+    "premiumRewards": {
+      "description": "Provides information about the premium rewards endpoints.",
+      "endpoints": {
+        "GET /api/premium-rewards": {
+          "description": "Serves up a json representation of all premium rewards",
+          "exampleResponse": [
+            {
+              "id": 1,
+              "title": "Premium Avatar Pack",
+              "description": "Unlock 10 exclusive character avatars",
+              "points_required": 200,
+              "is_active": true,
+              "category": "premium",
+              "does_expire": false,
+              "duration_days": 0
+            },
+            {
+              "id": 2,
+              "title": "Double XP Boost",
+              "description": "Earn double XP for 7 days",
+              "points_required": 100,
+              "is_active": true,
+              "category": "premium",
+              "does_expire": true,
+              "duration_days": 7
+            }
+          ],
+          "errorResponses": {
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/premium-rewards": {
+          "description": "Creates a new premium reward",
+          "exampleRequest": {
+            "title": "Test Reward",
+            "description": "Test Description",
+            "points_required": 100,
+            "is_active": true,
+            "category": "premium",
+            "does_expire": false,
+            "duration_days": 0
+          },
+          "exampleResponse": {
+            "id": 4,
+            "title": "Test Reward",
+            "description": "Test Description",
+            "points_required": 100,
+            "is_active": true,
+            "category": "premium",
+            "does_expire": false,
+            "duration_days": 0
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Empty request body"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/premium-rewards/:id": {
+          "description": "Serves up a json representation of a premium reward",
+          "exampleResponse": {
+            "id": 1,
+            "title": "Premium Avatar Pack",
+            "description": "Unlock 10 exclusive character avatars",
+            "points_required": 200,
+            "is_active": true,
+            "category": "premium",
+            "does_expire": false,
+            "duration_days": 0
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid reward ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "404": {
+              "description": "Reward not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "PATCH /api/premium-rewards/:id": {
+          "description": "Updates a premium reward",
+          "exampleRequest": {
+            "title": "Updated Reward",
+            "description": "Updated Description",
+            "points_required": 200,
+            "is_active": false,
+            "category": "premium",
+            "does_expire": true,
+            "duration_days": 7
+          },
+          "exampleResponse": {
+            "id": 1,
+            "title": "Updated Reward",
+            "description": "Updated Description",
+            "points_required": 200,
+            "is_active": false,
+            "category": "premium",
+            "does_expire": true,
+            "duration_days": 7
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid reward ID or empty request body"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "404": {
+              "description": "Reward not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "DELETE /api/premium-rewards/:id": {
+          "description": "Deletes a premium reward",
+          "errorResponses": {
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/premium-rewards/:id/purchase/:childId": {
+          "description": "Creates a premium reward purchase for a child profile without immediate activation",
+          "exampleRequest": {
+            "id": 1
+          },
+          "exampleResponse": {
+            "id": 1,
+            "user_id": null,
+            "child_id": 1,
+            "reward_id": 2,
+            "purchase_date": "2025-07-08T04:55:37.891Z",
+            "is_activated": false,
+            "expiry_date": null
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid reward ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "Reward not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/premium-rewards/purchased/:childId": {
+          "description": "Serves up a json representation of a child's purchased but unactivated premium rewards",
+          "exampleResponse": [
+            {
+              "id": 2,
+              "title": "Double XP Boost",
+              "description": "Earn double XP for 7 days",
+              "points_required": 100,
+              "is_active": true,
+              "category": "premium",
+              "does_expire": true,
+              "duration_days": 7,
+              "expiry_date": null,
+              "purchase_date": "2025-07-08T04:59:20.011Z",
+              "is_activated": false,
+              "purchase_id": 1
+            }
+          ],
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "GET /api/premium-rewards/active/:childId": {
+          "description": "Serves up a json representation of a child's active premium rewards",
+          "exampleResponse": [
+            {
+              "id": 2,
+              "title": "Double XP Boost",
+              "description": "Earn double XP for 7 days",
+              "points_required": 100,
+              "is_active": true,
+              "category": "premium",
+              "does_expire": true,
+              "duration_days": 7,
+              "expiry_date": "2025-07-15T05:01:10.556Z",
+              "purchase_date": "2025-07-08T05:01:10.553Z",
+              "is_activated": true,
+              "purchase_id": 1
+            }
+          ],
+          "errorResponses": {
+            "400": {
+              "description": "Invalid user ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "User not found or child not found"
+            }
+          },
+          "authNeeded": true
+        },
+        "POST /api/premium-rewards/activate/:childId/:purchaseId": {
+          "description": "Activates a purchased premium reward",
+          "exampleResponse": {
+            "id": 1,
+            "user_id": null,
+            "child_id": 1,
+            "reward_id": 2,
+            "purchase_date": "2025-07-08T05:01:53.418Z",
+            "is_activated": true,
+            "expiry_date": "2025-07-15T05:01:53.423Z"
+          },
+          "errorResponses": {
+            "400": {
+              "description": "Invalid purchase ID or child ID"
+            },
+            "401": {
+              "description": "Unauthenticated or invalid token"
+            },
+            "403": {
+              "description": "User is not a parent or child does not belong to user"
+            },
+            "404": {
+              "description": "Purchase not found or child not found"
+            }
+          },
+          "authNeeded": true
+        }
+      }
+    }
+  }
+}
