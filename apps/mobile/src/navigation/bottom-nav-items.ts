@@ -4,7 +4,7 @@ export type BottomNavItem = {
   key: MobileTab;
   label: string;
   icon: string;
-  route: "/home" | "/learn" | "/rewards" | "/profile";
+  route: "/home" | "/learn" | "/rewards" | "/insights" | "/profile";
   enabled: boolean;
 };
 
@@ -28,8 +28,8 @@ export const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
     key: "insights",
     label: "Insights",
     icon: "▥",
-    route: "/home",
-    enabled: false,
+    route: "/insights",
+    enabled: true,
   },
   {
     key: "profile",

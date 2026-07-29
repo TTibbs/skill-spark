@@ -26,6 +26,7 @@ export default function AppLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="home" />
         <Stack.Screen name="chores" />
+        <Stack.Screen name="insights" />
         <Stack.Screen name="learn" />
         <Stack.Screen name="profile" />
         <Stack.Screen name="rewards" />
