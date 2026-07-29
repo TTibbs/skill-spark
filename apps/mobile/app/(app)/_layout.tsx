@@ -27,6 +27,7 @@ export default function AppLayout() {
         <Stack.Screen name="home" />
         <Stack.Screen name="chores" />
         <Stack.Screen name="learn" />
+        <Stack.Screen name="profile" />
         <Stack.Screen name="rewards" />
         <Stack.Screen name="games/maths-meadow" />
         <Stack.Screen name="games/memory-match" />

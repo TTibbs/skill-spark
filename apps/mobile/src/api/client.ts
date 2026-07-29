@@ -5,6 +5,7 @@ import {
   createChoresApi,
   createGameResultsApi,
   createRewardsApi,
+  createStatsApi,
   createWordsApi,
 } from "@skill-spark/api-client";
 import { getApiBaseUrl } from "@/config/env";
@@ -21,6 +22,7 @@ export function createMobileApi(getAccessToken: () => string | null) {
     chores: createChoresApi(client),
     gameResults: createGameResultsApi(client),
     rewards: createRewardsApi(client),
+    stats: createStatsApi(client),
     words: createWordsApi(client),
   };
 }
