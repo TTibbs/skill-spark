@@ -133,7 +133,7 @@ export function HomeScreen() {
             <SectionHeader
               title="Pick up where you left off"
               action="See all"
-              onPress={() => router.push("/learn")}
+              onPress={() => router.push("/practice")}
             />
             <View className="mt-3 gap-3">
               {model.learningCards.map((card) => (

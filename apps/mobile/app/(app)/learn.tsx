@@ -1,5 +1,5 @@
-import { LearningScreen } from "@/screens/learning-screen";
+import { Redirect } from "expo-router";
 
 export default function LearnRoute() {
-  return <LearningScreen />;
+  return <Redirect href="/practice" />;
 }

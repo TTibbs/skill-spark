@@ -264,7 +264,7 @@ export function ColourCritterCatchScreen() {
               confirmLeave();
               return;
             }
-            router.push("/learn");
+            router.push("/practice");
           }}
           className="rounded-full border border-[#c9d6ce] bg-white px-4 py-3"
         >
@@ -374,7 +374,7 @@ export function ColourCritterCatchScreen() {
           seconds={finalSeconds}
           submission={submission}
           onRetry={() => void submitResult()}
-          onDone={() => router.push("/learn")}
+          onDone={() => router.push("/practice")}
         />
       ) : null}
     </ScrollView>
@@ -526,7 +526,7 @@ function confirmLeave() {
       {
         text: "Leave",
         style: "destructive",
-        onPress: () => router.push("/learn"),
+        onPress: () => router.push("/practice"),
       },
     ]
   );
