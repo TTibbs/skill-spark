@@ -9,8 +9,11 @@ import {
   addRequestedRedemption,
   canCancelRedemption,
   canRequestReward,
+  canRequestRewardNow,
   groupRedemptions,
+  hasPendingRedemption,
   replaceRedemption,
+  rewardRequestState,
 } from "./reward-state";
 
 describe("reward-state", () => {
@@ -28,6 +31,41 @@ describe("reward-state", () => {
     expect(canRequestReward(familyReward({ star_cost: 5 }), 8)).toBe(true);
     expect(canRequestReward(familyReward({ star_cost: 10 }), 8)).toBe(false);
     expect(canRequestReward(familyReward({ is_active: false }), 99)).toBe(false);
+  });
+
+  it("detects pending redemptions and blocks duplicate requests", () => {
+    const reward = familyReward({ id: 12, star_cost: 5 });
+    const pending = redemption({ reward_id: 12, status: "requested" });
+    const approved = redemption({ reward_id: 12, status: "approved" });
+
+    expect(hasPendingRedemption(reward, [pending])).toBe(true);
+    expect(hasPendingRedemption(reward, [approved])).toBe(false);
+    expect(canRequestRewardNow(reward, 10, [pending])).toBe(false);
+    expect(canRequestRewardNow(reward, 10, [approved])).toBe(true);
+  });
+
+  it("builds request states for affordable, pending and unaffordable rewards", () => {
+    const reward = familyReward({ id: 12, star_cost: 8 });
+
+    expect(rewardRequestState(reward, 12, [])).toMatchObject({
+      canRequest: true,
+      label: "Available",
+      actionLabel: "Request reward",
+    });
+    expect(
+      rewardRequestState(reward, 12, [
+        redemption({ reward_id: 12, status: "requested" }),
+      ])
+    ).toMatchObject({
+      canRequest: false,
+      pending: true,
+      actionLabel: "Waiting for grown-up",
+    });
+    expect(rewardRequestState(reward, 5, [])).toMatchObject({
+      canRequest: false,
+      label: "3 more stars needed",
+      actionLabel: "Need more stars",
+    });
   });
 
   it("groups reward loading results by redemption status", () => {

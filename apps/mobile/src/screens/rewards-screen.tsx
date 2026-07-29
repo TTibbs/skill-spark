@@ -1,39 +1,42 @@
 import * as React from "react";
-import { RefreshControl } from "react-native";
+import { Alert, RefreshControl } from "react-native";
 import type {
   FamilyReward,
   RewardRedemption,
   RewardRedemptionStatus,
 } from "@skill-spark/contracts";
-import { router } from "expo-router";
 import { ApiError } from "@skill-spark/api-client";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMobileApi } from "@/api/use-mobile-api";
 import { useChildren } from "@/children/use-children";
+import { BottomNav, BOTTOM_NAV_BASE_HEIGHT } from "@/navigation/bottom-nav";
 import {
   activeRewards,
   addRequestedRedemption,
   canCancelRedemption,
-  canRequestReward,
+  canRequestRewardNow,
   groupRedemptions,
+  hasPendingRedemption,
   replaceRedemption,
+  rewardRequestState,
 } from "@/rewards/reward-state";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "@/tw";
 
-const HISTORY_ORDER: RewardRedemptionStatus[] = [
-  "requested",
-  "approved",
-  "rejected",
-  "cancelled",
-];
+const PURPLE = "#7c3aed";
+const PURPLE_LIGHT = "#f4efff";
 
 export function RewardsScreen() {
   const {
+    children,
     selectedChild,
     status: childStatus,
+    error: childError,
     reload: reloadChildren,
+    selectChild,
     updateSelectedChildProgression,
   } = useChildren();
   const { api, withRefresh } = useMobileApi();
+  const insets = useSafeAreaInsets();
   const [rewards, setRewards] = React.useState<FamilyReward[]>([]);
   const [redemptions, setRedemptions] = React.useState<RewardRedemption[]>([]);
   const [status, setStatus] = React.useState<"idle" | "loading" | "ready" | "error">(
@@ -52,19 +55,28 @@ export function RewardsScreen() {
   const [actionErrors, setActionErrors] = React.useState<Record<string, string>>(
     {}
   );
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
+  const requestIdRef = React.useRef(0);
 
   const loadRewards = React.useCallback(
     async (mode: "initial" | "refresh" = "initial") => {
       if (!selectedChild) {
+        requestIdRef.current += 1;
         setRewards([]);
         setRedemptions([]);
         setStatus("idle");
+        setError(null);
         return;
       }
 
+      const childId = selectedChild.id;
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
       if (mode === "refresh") {
         setRefreshing(true);
       } else {
+        setRewards([]);
+        setRedemptions([]);
         setStatus("loading");
       }
       setError(null);
@@ -73,17 +85,19 @@ export function RewardsScreen() {
         const [rewardResponse, redemptionResponse] = await withRefresh(() =>
           Promise.all([
             api.rewards.list(),
-            api.rewards.listRedemptions(selectedChild.id),
+            api.rewards.listRedemptions(childId),
           ])
         );
+        if (requestIdRef.current !== requestId) return;
         setRewards(rewardResponse.rewards);
         setRedemptions(redemptionResponse.redemptions);
         setStatus("ready");
       } catch {
+        if (requestIdRef.current !== requestId) return;
         setError("Rewards could not be loaded. Check your connection and try again.");
         setStatus("error");
       } finally {
-        setRefreshing(false);
+        if (requestIdRef.current === requestId) setRefreshing(false);
       }
     },
     [api.rewards, selectedChild, withRefresh]
@@ -96,10 +110,13 @@ export function RewardsScreen() {
   const requestReward = React.useCallback(
     async (reward: FamilyReward) => {
       if (!selectedChild || requestingIdsRef.current.has(reward.id)) return;
-      if (!canRequestReward(reward, selectedChild.reward_points)) return;
+      if (!canRequestRewardNow(reward, selectedChild.reward_points, redemptions)) {
+        return;
+      }
 
       requestingIdsRef.current.add(reward.id);
       setRequestingIds((current) => new Set(current).add(reward.id));
+      setSuccessMessage(null);
       setActionErrors((current) => {
         const next = { ...current };
         delete next[`reward-${reward.id}`];
@@ -114,6 +131,7 @@ export function RewardsScreen() {
           addRequestedRedemption(current, response.redemption)
         );
         updateSelectedChildProgression(response.child);
+        setSuccessMessage(`${reward.title} requested. Stars updated.`);
         await reloadChildren();
       } catch (requestError) {
         setActionErrors((current) => ({
@@ -134,11 +152,30 @@ export function RewardsScreen() {
     },
     [
       api.rewards,
+      redemptions,
       reloadChildren,
       selectedChild,
       updateSelectedChildProgression,
       withRefresh,
     ]
+  );
+
+  const confirmRequestReward = React.useCallback(
+    (reward: FamilyReward) => {
+      if (!selectedChild) return;
+      Alert.alert(
+        "Spend stars?",
+        `Request ${reward.title} for ${reward.star_cost} stars? A grown-up will review it.`,
+        [
+          { text: "Not now", style: "cancel" },
+          {
+            text: "Request",
+            onPress: () => void requestReward(reward),
+          },
+        ]
+      );
+    },
+    [requestReward, selectedChild]
   );
 
   const cancelRedemption = React.useCallback(
@@ -148,6 +185,7 @@ export function RewardsScreen() {
 
       cancellingIdsRef.current.add(redemption.id);
       setCancellingIds((current) => new Set(current).add(redemption.id));
+      setSuccessMessage(null);
       setActionErrors((current) => {
         const next = { ...current };
         delete next[`redemption-${redemption.id}`];
@@ -162,6 +200,7 @@ export function RewardsScreen() {
           replaceRedemption(current, response.redemption)
         );
         updateSelectedChildProgression(response.child);
+        setSuccessMessage("Request cancelled. Stars refunded.");
         await reloadChildren();
       } catch {
         setActionErrors((current) => ({
@@ -192,181 +231,302 @@ export function RewardsScreen() {
     () => groupRedemptions(redemptions),
     [redemptions]
   );
+  const isLoading = childStatus === "loading" || status === "loading";
 
   return (
-    <ScrollView
-      className="flex-1 bg-[#f7f2e8]"
-      contentContainerClassName="px-5 pb-10 pt-16"
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => void loadRewards("refresh")}
-          tintColor="#315f4c"
-        />
-      }
-    >
-      <View className="flex-row items-center justify-between">
-        <View className="flex-1">
-          <Text className="text-sm font-black uppercase tracking-[2px] text-[#5d9476]">
-            Rewards
-          </Text>
-          <Text className="mt-2 text-3xl font-black text-[#243c32]">
-            {selectedChild ? `${selectedChild.name}'s stars` : "Pick a child"}
-          </Text>
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push("/home")}
-          className="rounded-full border border-[#c9d6ce] bg-white px-4 py-3"
-        >
-          <Text className="text-sm font-black text-[#315f4c]">Home</Text>
-        </Pressable>
-      </View>
-
-      {selectedChild ? (
-        <View className="mt-8 rounded-[28px] bg-[#315f4c] p-6">
-          <Text className="text-sm font-black uppercase tracking-[2px] text-[#bad3c7]">
-            Current stars
-          </Text>
-          <Text className="mt-2 text-4xl font-black text-white">
-            {selectedChild.reward_points}
-          </Text>
-        </View>
-      ) : null}
-
-      {childStatus === "loading" || status === "loading" ? (
-        <View className="mt-10 items-center rounded-[28px] bg-white p-8">
-          <ActivityIndicator color="#315f4c" />
-          <Text className="mt-4 text-base font-semibold text-[#315f4c]">
-            Loading rewards...
-          </Text>
-        </View>
-      ) : null}
-
-      {!selectedChild && childStatus === "ready" ? (
-        <EmptyCard
-          title="No child selected"
-          body="Choose or create a child profile before requesting rewards."
-        />
-      ) : null}
-
-      {status === "error" ? (
-        <View className="mt-10 rounded-[28px] bg-white p-6">
-          <Text className="text-xl font-black text-[#243c32]">
-            Could not load rewards
-          </Text>
-          <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
-            {error}
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => void loadRewards()}
-            className="mt-5 items-center rounded-2xl bg-[#315f4c] px-5 py-4"
-          >
-            <Text className="font-black text-white">Retry</Text>
-          </Pressable>
-        </View>
-      ) : null}
-
-      {status === "ready" ? (
-        <>
-          <View className="mt-8">
-            <Text className="text-lg font-black text-[#243c32]">
-              Family rewards
+    <View className="flex-1 bg-white">
+      <ScrollView
+        className="flex-1 bg-white"
+        contentContainerStyle={{
+          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 88,
+          paddingHorizontal: 20,
+          paddingTop: Math.max(insets.top, 24) + 20,
+        }}
+        refreshControl={
+          <RefreshControl
+            colors={[PURPLE]}
+            refreshing={refreshing}
+            tintColor={PURPLE}
+            onRefresh={() => void loadRewards("refresh")}
+          />
+        }
+      >
+        <View className="flex-row items-center justify-between">
+          <View className="flex-1">
+            <Text className="text-4xl font-black text-[#243c32]">Rewards</Text>
+            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+              Request family rewards using earned stars.
             </Text>
-            {visibleRewards.length === 0 ? (
-              <Text className="mt-3 rounded-[28px] bg-white p-5 text-base leading-6 text-[#5c6f65]">
-                No family rewards are available yet.
+          </View>
+          <View
+            className="items-center justify-center rounded-full border border-[#d8cdb8] bg-white"
+            style={{ height: 58, width: 58 }}
+          >
+            <Text className="font-black" style={{ color: PURPLE, fontSize: 24 }}>
+              ☆
+            </Text>
+          </View>
+        </View>
+
+        <View className="mt-6">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="gap-3"
+          >
+            {children.map((child) => {
+              const selected = selectedChild?.id === child.id;
+              return (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  key={child.id}
+                  onPress={() => void selectChild(child.id)}
+                  className="flex-row items-center rounded-full border bg-white px-4 py-3"
+                  style={{ borderColor: selected ? PURPLE : "#d8cdb8" }}
+                >
+                  <Avatar label={child.name} size={32} />
+                  <Text
+                    className="text-base font-black text-[#243c32]"
+                    style={{ marginLeft: 8 }}
+                  >
+                    {child.name}
+                  </Text>
+                  {selected ? (
+                    <Text
+                      className="text-base font-black"
+                      style={{ color: PURPLE, marginLeft: 8 }}
+                    >
+                      ✓
+                    </Text>
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        {selectedChild ? (
+          <View
+            className="mt-8 rounded-[28px] border p-5"
+            style={{ backgroundColor: PURPLE_LIGHT, borderColor: "#d7c8ff" }}
+          >
+            <Text className="text-lg font-black" style={{ color: PURPLE }}>
+              Current stars
+            </Text>
+            <View className="mt-3 flex-row flex-wrap items-end justify-between gap-3">
+              <Text
+                className="font-black text-[#243c32]"
+                style={{ fontSize: 52, lineHeight: 58 }}
+              >
+                {selectedChild.reward_points}
               </Text>
+              <Text className="mb-2 text-base font-semibold text-[#5c6f65]">
+                Level {selectedChild.level} · {selectedChild.xp} XP
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        {successMessage ? (
+          <Text className="mt-5 rounded-2xl bg-[#e9f7ee] px-4 py-3 text-sm font-black text-[#315f4c]">
+            {successMessage}
+          </Text>
+        ) : null}
+
+        {isLoading ? (
+          <Panel>
+            <ActivityIndicator color={PURPLE} />
+            <Text className="mt-4 text-base font-semibold text-[#5c6f65]">
+              Loading rewards...
+            </Text>
+          </Panel>
+        ) : null}
+
+        {!selectedChild && childStatus === "ready" ? (
+          <Panel>
+            <Text className="text-xl font-black text-[#243c32]">
+              No child selected
+            </Text>
+            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+              Choose or create a child profile before requesting rewards.
+            </Text>
+          </Panel>
+        ) : null}
+
+        {childStatus === "error" ? (
+          <Panel>
+            <Text className="text-xl font-black text-[#243c32]">
+              Could not load children
+            </Text>
+            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+              {childError ?? "Try again when your connection is ready."}
+            </Text>
+          </Panel>
+        ) : null}
+
+        {status === "error" ? (
+          <Panel>
+            <Text className="text-xl font-black text-[#243c32]">
+              Could not load rewards
+            </Text>
+            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+              {error}
+            </Text>
+            <PrimaryButton label="Retry" onPress={() => void loadRewards()} />
+          </Panel>
+        ) : null}
+
+        {status === "ready" ? (
+          <>
+            <SectionTitle title="Family rewards" />
+            {visibleRewards.length === 0 ? (
+              <Panel>
+                <Text className="text-xl font-black text-[#243c32]">
+                  No rewards yet
+                </Text>
+                <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+                  Family rewards are created from the parent web dashboard.
+                </Text>
+              </Panel>
             ) : (
-              <View className="mt-3 gap-3">
+              <View className="gap-3">
                 {visibleRewards.map((reward) => (
                   <RewardCard
                     key={reward.id}
                     reward={reward}
                     starBalance={selectedChild?.reward_points ?? 0}
+                    redemptions={redemptions}
                     error={actionErrors[`reward-${reward.id}`] ?? null}
                     isRequesting={requestingIds.has(reward.id)}
-                    onRequest={() => void requestReward(reward)}
+                    onRequest={() => confirmRequestReward(reward)}
                   />
                 ))}
               </View>
             )}
-          </View>
 
-          {HISTORY_ORDER.map((section) =>
-            redemptionSections[section].length > 0 ? (
-              <View key={section} className="mt-8">
-                <Text className="text-lg font-black text-[#243c32]">
-                  {redemptionLabel(section)}
-                </Text>
-                <View className="mt-3 gap-3">
-                  {redemptionSections[section].map((redemption) => (
-                    <RedemptionCard
-                      key={redemption.id}
-                      redemption={redemption}
-                      error={actionErrors[`redemption-${redemption.id}`] ?? null}
-                      isCancelling={cancellingIds.has(redemption.id)}
-                      onCancel={() => void cancelRedemption(redemption)}
-                    />
-                  ))}
-                </View>
-              </View>
-            ) : null
-          )}
-        </>
-      ) : null}
-    </ScrollView>
+            {redemptionSections.requested.length > 0 ? (
+              <RedemptionSection
+                title="Waiting for grown-up"
+                redemptions={redemptionSections.requested}
+                actionErrors={actionErrors}
+                cancellingIds={cancellingIds}
+                onCancel={(redemption) => void cancelRedemption(redemption)}
+              />
+            ) : null}
+
+            {(["approved", "rejected", "cancelled"] as const).map((section) =>
+              redemptionSections[section].length > 0 ? (
+                <RedemptionSection
+                  key={section}
+                  title={redemptionLabel(section)}
+                  redemptions={redemptionSections[section]}
+                  actionErrors={actionErrors}
+                  cancellingIds={cancellingIds}
+                  onCancel={(redemption) => void cancelRedemption(redemption)}
+                />
+              ) : null
+            )}
+          </>
+        ) : null}
+      </ScrollView>
+      <BottomNav active="rewards" />
+    </View>
   );
 }
 
 function RewardCard({
   reward,
   starBalance,
+  redemptions,
   error,
   isRequesting,
   onRequest,
 }: {
   reward: FamilyReward;
   starBalance: number;
+  redemptions: RewardRedemption[];
   error: string | null;
   isRequesting: boolean;
   onRequest(): void;
 }) {
-  const affordable = canRequestReward(reward, starBalance);
+  const requestState = rewardRequestState(reward, starBalance, redemptions);
+  const disabled = !requestState.canRequest || isRequesting;
 
   return (
     <View className="rounded-[28px] border border-[#d8cdb8] bg-white p-5">
-      <Text className="text-lg font-black text-[#243c32]">{reward.title}</Text>
+      <View className="flex-row items-center">
+        <View
+          className="items-center justify-center rounded-2xl"
+          style={{ backgroundColor: PURPLE_LIGHT, height: 64, width: 64 }}
+        >
+          <Text className="text-3xl">★</Text>
+        </View>
+        <View className="flex-1" style={{ marginLeft: 16 }}>
+          <Text className="text-xl font-black text-[#243c32]">
+            {reward.title}
+          </Text>
+          <Text className="mt-1 text-sm font-black" style={{ color: PURPLE }}>
+            {reward.star_cost} stars · {requestState.label}
+          </Text>
+        </View>
+      </View>
       {reward.description ? (
-        <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+        <Text className="mt-4 text-base leading-6 text-[#5c6f65]">
           {reward.description}
         </Text>
       ) : null}
-      <Text className="mt-3 text-sm font-black uppercase tracking-[1.5px] text-[#5d9476]">
-        {reward.star_cost} stars
-      </Text>
       {error ? (
-        <Text className="mt-3 rounded-2xl bg-[#f9ded7] px-4 py-3 text-sm font-semibold text-[#8a3324]">
+        <Text className="mt-4 rounded-2xl bg-[#f9ded7] px-4 py-3 text-sm font-semibold text-[#8a3324]">
           {error}
         </Text>
       ) : null}
       <Pressable
         accessibilityRole="button"
-        disabled={!affordable || isRequesting}
+        disabled={disabled}
         onPress={onRequest}
-        className={`mt-4 items-center rounded-2xl px-5 py-4 ${
-          affordable ? "bg-[#315f4c]" : "bg-[#c9d6ce]"
-        }`}
+        className="mt-4 items-center rounded-2xl px-5 py-4"
+        style={{ backgroundColor: disabled ? "#d8cdb8" : PURPLE }}
       >
         {isRequesting ? (
           <ActivityIndicator color="#ffffff" />
         ) : (
           <Text className="font-black text-white">
-            {affordable ? "Request reward" : "Need more stars"}
+            {requestState.actionLabel}
           </Text>
         )}
       </Pressable>
+    </View>
+  );
+}
+
+function RedemptionSection({
+  title,
+  redemptions,
+  actionErrors,
+  cancellingIds,
+  onCancel,
+}: {
+  title: string;
+  redemptions: RewardRedemption[];
+  actionErrors: Record<string, string>;
+  cancellingIds: Set<number>;
+  onCancel(redemption: RewardRedemption): void;
+}) {
+  return (
+    <View className="mt-8">
+      <Text className="mb-3 text-2xl font-black text-[#243c32]">{title}</Text>
+      <View className="gap-3">
+        {redemptions.map((redemption) => (
+          <RedemptionCard
+            key={redemption.id}
+            redemption={redemption}
+            error={actionErrors[`redemption-${redemption.id}`] ?? null}
+            isCancelling={cancellingIds.has(redemption.id)}
+            onCancel={() => onCancel(redemption)}
+          />
+        ))}
+      </View>
     </View>
   );
 }
@@ -386,12 +546,21 @@ function RedemptionCard({
 
   return (
     <View className="rounded-[28px] border border-[#d8cdb8] bg-white p-5">
-      <Text className="text-lg font-black text-[#243c32]">
-        {redemption.reward_title}
-      </Text>
-      <Text className="mt-2 text-base font-semibold text-[#315f4c]">
-        {redemption.star_cost} stars · {redemptionLabel(redemption.status)}
-      </Text>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-1">
+          <Text className="text-lg font-black text-[#243c32]">
+            {redemption.reward_title}
+          </Text>
+          <Text className="mt-1 text-sm font-black" style={{ color: PURPLE }}>
+            {redemption.star_cost} stars · {redemptionLabel(redemption.status)}
+          </Text>
+        </View>
+      </View>
+      {redemption.reward_description ? (
+        <Text className="mt-3 text-sm leading-5 text-[#5c6f65]">
+          {redemption.reward_description}
+        </Text>
+      ) : null}
       {redemption.rejection_reason ? (
         <Text className="mt-3 rounded-2xl bg-[#f9ded7] px-4 py-3 text-sm font-semibold text-[#8a3324]">
           {redemption.rejection_reason}
@@ -407,12 +576,15 @@ function RedemptionCard({
           accessibilityRole="button"
           disabled={isCancelling}
           onPress={onCancel}
-          className="mt-4 items-center rounded-2xl border border-[#c9d6ce] bg-white px-5 py-4"
+          className="mt-4 items-center rounded-2xl border px-5 py-4"
+          style={{ borderColor: PURPLE }}
         >
           {isCancelling ? (
-            <ActivityIndicator color="#315f4c" />
+            <ActivityIndicator color={PURPLE} />
           ) : (
-            <Text className="font-black text-[#315f4c]">Cancel request</Text>
+            <Text className="font-black" style={{ color: PURPLE }}>
+              Cancel request
+            </Text>
           )}
         </Pressable>
       ) : null}
@@ -420,11 +592,44 @@ function RedemptionCard({
   );
 }
 
-function EmptyCard({ title, body }: { title: string; body: string }) {
+function SectionTitle({ title }: { title: string }) {
   return (
-    <View className="mt-10 rounded-[28px] bg-white p-6">
-      <Text className="text-xl font-black text-[#243c32]">{title}</Text>
-      <Text className="mt-2 text-base leading-6 text-[#5c6f65]">{body}</Text>
+    <Text className="mb-3 mt-8 text-2xl font-black text-[#243c32]">
+      {title}
+    </Text>
+  );
+}
+
+function Avatar({ label, size }: { label: string; size: number }) {
+  return (
+    <View
+      className="items-center justify-center rounded-full"
+      style={{ backgroundColor: PURPLE_LIGHT, height: size, width: size }}
+    >
+      <Text className="font-black" style={{ color: PURPLE, fontSize: size * 0.34 }}>
+        {label.slice(0, 1).toUpperCase()}
+      </Text>
+    </View>
+  );
+}
+
+function PrimaryButton({ label, onPress }: { label: string; onPress(): void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      className="mt-5 items-center rounded-2xl px-5 py-4"
+      style={{ backgroundColor: PURPLE }}
+    >
+      <Text className="font-black text-white">{label}</Text>
+    </Pressable>
+  );
+}
+
+function Panel({ children }: { children: React.ReactNode }) {
+  return (
+    <View className="mt-8 rounded-[28px] border border-[#d8cdb8] bg-white p-6">
+      {children}
     </View>
   );
 }

@@ -13,4 +13,12 @@ describe("bottom nav", () => {
       route: "/insights",
     });
   });
+
+  test("keeps rewards available for the bottom navigation", () => {
+    expect(BOTTOM_NAV_ITEMS.find((item) => item.key === "rewards")).toMatchObject({
+      enabled: true,
+      label: "Rewards",
+      route: "/rewards",
+    });
+  });
 });
