@@ -1,8 +1,9 @@
 import * as React from "react";
 import { router } from "expo-router";
 import type { ChoreAssignment, FamilyReward } from "@skill-spark/contracts";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChildren } from "@/children/use-children";
-import { BottomNav } from "@/navigation/bottom-nav";
+import { BottomNav, BOTTOM_NAV_BASE_HEIGHT } from "@/navigation/bottom-nav";
 import { buildHomeViewModel, type LearningCard } from "@/home/home-model";
 import { useHomeDashboardData } from "@/home/use-home-dashboard-data";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "@/tw";
@@ -13,6 +14,7 @@ const PURPLE_LIGHT = "#f4efff";
 export function HomeScreen() {
   const { children, selectedChild, status, error, reload, selectChild } =
     useChildren();
+  const insets = useSafeAreaInsets();
   const dashboard = useHomeDashboardData();
   const model = selectedChild
     ? buildHomeViewModel(selectedChild, dashboard.data)
@@ -22,8 +24,11 @@ export function HomeScreen() {
     <View className="flex-1 bg-white">
       <ScrollView
         className="flex-1 bg-white"
-        contentContainerClassName="px-5 pt-16"
-        contentContainerStyle={{ paddingBottom: 132 }}
+        contentContainerStyle={{
+          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 24,
+          paddingHorizontal: 20,
+          paddingTop: Math.max(insets.top, 24) + 20,
+        }}
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">

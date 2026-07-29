@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Alert } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/auth/use-auth";
 import { useChildren } from "@/children/use-children";
-import { BottomNav } from "@/navigation/bottom-nav";
+import { BottomNav, BOTTOM_NAV_BASE_HEIGHT } from "@/navigation/bottom-nav";
 import {
   PROFILE_ACCOUNT_ROWS,
   PROFILE_PREFERENCE_ROWS,
@@ -16,6 +17,7 @@ const PURPLE_LIGHT = "#f4efff";
 export function ProfileScreen() {
   const { user, logout } = useAuth();
   const { children, selectedChild, selectChild, status } = useChildren();
+  const insets = useSafeAreaInsets();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
   const handleLogout = async () => {
@@ -28,8 +30,11 @@ export function ProfileScreen() {
     <View className="flex-1 bg-white">
       <ScrollView
         className="flex-1 bg-white"
-        contentContainerClassName="px-5 pt-16"
-        contentContainerStyle={{ paddingBottom: 132 }}
+        contentContainerStyle={{
+          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 24,
+          paddingHorizontal: 20,
+          paddingTop: Math.max(insets.top, 24) + 20,
+        }}
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
