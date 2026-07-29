@@ -25,7 +25,7 @@ export function HomeScreen() {
       <ScrollView
         className="flex-1 bg-white"
         contentContainerStyle={{
-          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 24,
+          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 88,
           paddingHorizontal: 20,
           paddingTop: Math.max(insets.top, 24) + 20,
         }}
@@ -191,40 +191,37 @@ function FeaturedLearningCard({ card }: { card: LearningCard }) {
     >
       <View className="flex-row items-center">
         <View
-          className="items-center justify-center rounded-[28px]"
-          style={{ backgroundColor: "#e4d8ff", height: 136, width: 136 }}
+          className="items-center justify-center rounded-3xl"
+          style={{ backgroundColor: "#e4d8ff", height: 76, width: 76 }}
         >
-          <Text className="text-4xl">✦</Text>
-          <Text className="mt-2 text-lg font-black" style={{ color: PURPLE }}>
-            Skill
-          </Text>
+          <Text className="text-3xl">✦</Text>
         </View>
         <View className="flex-1" style={{ marginLeft: 18 }}>
           <Text className="text-lg font-black" style={{ color: PURPLE }}>
             Continue learning
           </Text>
-          <Text className="mt-2 text-2xl font-black text-[#243c32]">
-            {card.title}
-          </Text>
           <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
             {card.subtitle}
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.push(card.route)}
-            className="mt-4 flex-row items-center justify-center rounded-2xl px-5 py-4"
-            style={{ backgroundColor: PURPLE }}
-          >
-            <Text className="text-base font-black text-white">Continue</Text>
-            <Text
-              className="text-base font-black text-white"
-              style={{ marginLeft: 8 }}
-            >
-              ›
-            </Text>
-          </Pressable>
         </View>
       </View>
+      <Text className="mt-5 text-3xl font-black text-[#243c32]">
+        {card.title}
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push(card.route)}
+        className="mt-4 flex-row items-center justify-center rounded-2xl px-5 py-4"
+        style={{ backgroundColor: PURPLE }}
+      >
+        <Text className="text-base font-black text-white">Continue</Text>
+        <Text
+          className="text-base font-black text-white"
+          style={{ marginLeft: 8 }}
+        >
+          ›
+        </Text>
+      </Pressable>
     </View>
   );
 }
