@@ -13,9 +13,18 @@
     "android": {
       "package": "com.skillspark.mobile"
     },
-    "plugins": ["expo-router", "expo-secure-store"],
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f2356896-28d1-426b-a6f9-d1c0ac5507cc"
+      }
     }
   }
 }

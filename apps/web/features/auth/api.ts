@@ -3,7 +3,7 @@
 import { ApiClient, createAuthApi } from "@skill-spark/api-client";
 
 const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+  process.env.NEXT_PUBLIC_API_URL || "/api";
 
 export const createBrowserAuthApi = (
   getAccessToken: () => string | null,
