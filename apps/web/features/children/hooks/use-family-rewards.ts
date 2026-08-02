@@ -31,6 +31,9 @@ export function useFamilyRewards() {
         }
         const response = await api.rewards.list(controller.signal);
         if (!cancelled) {
+          if (!Array.isArray(response.rewards)) {
+            throw new Error("Reward response was not valid.");
+          }
           setState({ rewards: response.rewards, isLoading: false, error: null });
         }
       } catch (error) {

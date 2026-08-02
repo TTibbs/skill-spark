@@ -52,6 +52,9 @@ export function useChildren() {
         );
 
         if (!cancelled) {
+          if (!Array.isArray(response.children)) {
+            throw new Error("Child profile response was not valid.");
+          }
           setState({
             children: response.children,
             isLoading: false,

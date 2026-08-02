@@ -34,6 +34,9 @@ export function useRewardRedemptions(childId: number | null) {
           controller.signal
         );
         if (!cancelled) {
+          if (!Array.isArray(response.redemptions)) {
+            throw new Error("Reward request response was not valid.");
+          }
           setState({
             redemptions: response.redemptions,
             isLoading: false,
