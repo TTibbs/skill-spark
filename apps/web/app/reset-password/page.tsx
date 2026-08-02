@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { ApiError, ApiClient, createAuthApi } from "@skill-spark/api-client";
+import { getBrowserApiBaseUrl } from "@/features/api/base-url";
 import {
   AuthShell,
   Field,
@@ -13,7 +14,7 @@ import {
 
 const authApi = createAuthApi(
   new ApiClient({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || "/api",
+    baseUrl: getBrowserApiBaseUrl(),
     credentials: "include",
   })
 );

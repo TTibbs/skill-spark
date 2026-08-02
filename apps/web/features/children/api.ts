@@ -9,9 +9,9 @@ import {
   createStatsApi,
   createWordsApi,
 } from "@skill-spark/api-client";
+import { getBrowserApiBaseUrl } from "@/features/api/base-url";
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL || "/api";
+const apiBaseUrl = getBrowserApiBaseUrl();
 
 export const createBrowserChildrenApi = (
   getAccessToken: () => string | null,
