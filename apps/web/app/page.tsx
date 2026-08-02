@@ -5,7 +5,7 @@ const games = [
     title: "Maths Meadow",
     description:
       "Build confidence with addition, subtraction and number challenges that adapt as children progress.",
-    href: "/games/maths",
+    href: "/games/maths-meadow",
     icon: CalculatorIcon,
     accent: "bg-[#fff0bd]",
     iconBackground: "bg-[#ffd86f]",
@@ -14,7 +14,7 @@ const games = [
     title: "Spelling Garden",
     description:
       "Practise letters, sounds and spelling through short, colourful word-building activities.",
-    href: "/games/spelling",
+    href: "/games/spelling-garden",
     icon: LettersIcon,
     accent: "bg-[#dcecff]",
     iconBackground: "bg-[#9ac9ff]",
@@ -23,7 +23,7 @@ const games = [
     title: "Memory Match",
     description:
       "Strengthen memory and concentration by matching characters, objects, words and numbers.",
-    href: "/games/memory",
+    href: "/games/memory-match",
     icon: MemoryIcon,
     accent: "bg-[#eadfff]",
     iconBackground: "bg-[#c4a3ff]",
