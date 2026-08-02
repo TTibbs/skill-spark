@@ -76,7 +76,7 @@
             "401": {
               "description": "Invalid credentials",
               "example": {
-                "message": "Invalid email or password"
+                "message": "Invalid credentials"
               }
             },
             "429": {

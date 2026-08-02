@@ -45,7 +45,7 @@ if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
 }
 
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const INVALID_LOGIN_MESSAGE = "Invalid email or password";
+const INVALID_LOGIN_MESSAGE = "Invalid credentials";
 type RefreshTokenMode = "cookie" | "explicit";
 
 const refreshCookieOptions = {

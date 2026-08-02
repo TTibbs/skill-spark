@@ -406,7 +406,7 @@ describe("Authentication", () => {
         .send(nonExistentUser)
         .expect(401);
       expect(body.status).toBe("error");
-      expect(body.message).toBe("Invalid email or password");
+      expect(body.message).toBe("Invalid credentials");
     });
     test("Should reject login attempt when email does not exist", async () => {
       const nonExistentEmail = {
@@ -418,7 +418,7 @@ describe("Authentication", () => {
         .send(nonExistentEmail)
         .expect(401);
       expect(body.status).toBe("error");
-      expect(body.message).toBe("Invalid email or password");
+      expect(body.message).toBe("Invalid credentials");
     });
     test("Should reject login attempt when password is incorrect", async () => {
       const invalidPassword = {
@@ -430,7 +430,7 @@ describe("Authentication", () => {
         .send(invalidPassword)
         .expect(401);
       expect(body.status).toBe("error");
-      expect(body.message).toBe("Invalid email or password");
+      expect(body.message).toBe("Invalid credentials");
     });
     test("Should validate required input fields for login", async () => {
       const missingUsername = {
