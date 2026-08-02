@@ -14,6 +14,8 @@ const clientUrls = (process.env.CLIENT_URL || "http://localhost:3000")
   .map((url) => url.trim())
   .filter(Boolean);
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: clientUrls,
