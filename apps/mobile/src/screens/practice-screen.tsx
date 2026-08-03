@@ -2,6 +2,7 @@ import * as React from "react";
 import { RefreshControl } from "react-native";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ChildProfileSwitcher } from "@/children/child-profile-switcher";
 import { useChildren } from "@/children/use-children";
 import { useInsightsData } from "@/insights/use-insights-data";
 import { BottomNav, BOTTOM_NAV_BASE_HEIGHT } from "@/navigation/bottom-nav";
@@ -12,8 +13,48 @@ import {
 } from "@/practice/practice-model";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "@/tw";
 
-const PURPLE = "#7c3aed";
-const PURPLE_LIGHT = "#f4efff";
+const INK = "#21372e";
+const MUTED = "#66766f";
+const GREEN = "#2b5f4b";
+const GREEN_DARK = "#203c32";
+const SAGE = "#dceee3";
+const CREAM = "#fbfcf7";
+const BORDER = "#d9e5dd";
+const YELLOW = "#ffd86f";
+const YELLOW_SOFT = "#fff0bd";
+const PURPLE = "#7b61b8";
+const PURPLE_SOFT = "#eadfff";
+const BLUE_SOFT = "#dcecff";
+
+const ACTIVITY_META: Record<
+  PracticeActivity["key"],
+  { accent: string; badge: string; text: string; bar: string }
+> = {
+  maths: {
+    accent: YELLOW_SOFT,
+    badge: YELLOW,
+    text: INK,
+    bar: "#d7a932",
+  },
+  memory: {
+    accent: PURPLE_SOFT,
+    badge: "#c4a3ff",
+    text: INK,
+    bar: PURPLE,
+  },
+  spelling: {
+    accent: BLUE_SOFT,
+    badge: "#9ac9ff",
+    text: INK,
+    bar: "#4f8fbd",
+  },
+  shapes: {
+    accent: SAGE,
+    badge: "#8bdbab",
+    text: INK,
+    bar: GREEN,
+  },
+};
 
 export function PracticeScreen() {
   const { children, selectedChild, selectChild, status, error, reload } =
@@ -31,80 +72,62 @@ export function PracticeScreen() {
   const hasActivity = activities.some((activity) => activity.games > 0);
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1" style={{ backgroundColor: CREAM }}>
       <ScrollView
-        className="flex-1 bg-white"
+        className="flex-1"
         contentContainerStyle={{
-          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 88,
+          paddingBottom:
+            BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 88,
           paddingHorizontal: 20,
           paddingTop: Math.max(insets.top, 24) + 20,
         }}
         refreshControl={
           <RefreshControl
-            colors={[PURPLE]}
+            colors={[GREEN]}
             refreshing={insights.status === "loading"}
-            tintColor={PURPLE}
+            tintColor={GREEN}
             onRefresh={() => void insights.reload()}
           />
         }
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
-            <Text className="text-4xl font-black text-[#243c32]">Practice</Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="text-4xl font-black" style={{ color: INK }}>
+              Practice
+            </Text>
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               Pick an activity and keep learning moving.
             </Text>
           </View>
           <View
-            className="items-center justify-center rounded-full border border-[#d8cdb8] bg-white"
-            style={{ height: 58, width: 58 }}
+            className="items-center justify-center rounded-full border"
+            style={{
+              backgroundColor: YELLOW,
+              borderColor: "#e2b94d",
+              height: 58,
+              width: 58,
+            }}
           >
-            <Text className="text-2xl">✎</Text>
+            <Text className="text-2xl" style={{ color: INK }}>
+              ✎
+            </Text>
           </View>
         </View>
 
-        <View className="mt-6">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-3"
-          >
-            {children.map((child) => {
-              const selected = selectedChild?.id === child.id;
-              return (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  key={child.id}
-                  onPress={() => void selectChild(child.id)}
-                  className="flex-row items-center rounded-full border bg-white px-4 py-3"
-                  style={{ borderColor: selected ? PURPLE : "#d8cdb8" }}
-                >
-                  <Avatar label={child.name} size={32} />
-                  <Text
-                    className="text-base font-black text-[#243c32]"
-                    style={{ marginLeft: 8 }}
-                  >
-                    {child.name}
-                  </Text>
-                  {selected ? (
-                    <Text
-                      className="text-base font-black"
-                      style={{ color: PURPLE, marginLeft: 8 }}
-                    >
-                      ✓
-                    </Text>
-                  ) : null}
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+        <ChildProfileSwitcher
+          className="mt-6"
+          children={children}
+          selectedChildId={selectedChild?.id}
+          onSelect={(childId) => void selectChild(childId)}
+        />
 
         {status === "loading" ? (
           <Panel>
-            <ActivityIndicator color={PURPLE} />
-            <Text className="mt-4 text-base font-semibold text-[#5c6f65]">
+            <ActivityIndicator color={GREEN} />
+            <Text
+              className="mt-4 text-base font-semibold"
+              style={{ color: MUTED }}
+            >
               Loading children...
             </Text>
           </Panel>
@@ -112,10 +135,10 @@ export function PracticeScreen() {
 
         {status === "error" ? (
           <Panel>
-            <Text className="text-xl font-black text-[#243c32]">
+            <Text className="text-xl font-black" style={{ color: INK }}>
               Could not load children
             </Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               {error ?? "Try again when your connection is ready."}
             </Text>
             <PrimaryButton label="Retry" onPress={() => void reload()} />
@@ -124,10 +147,10 @@ export function PracticeScreen() {
 
         {status === "ready" && children.length === 0 ? (
           <Panel>
-            <Text className="text-xl font-black text-[#243c32]">
+            <Text className="text-xl font-black" style={{ color: INK }}>
               No child selected
             </Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               Child profiles are managed from the parent web dashboard.
             </Text>
           </Panel>
@@ -137,12 +160,15 @@ export function PracticeScreen() {
           <>
             <View
               className="mt-8 rounded-[28px] border p-5"
-              style={{ backgroundColor: PURPLE_LIGHT, borderColor: "#d7c8ff" }}
+              style={{ backgroundColor: GREEN_DARK, borderColor: "#315848" }}
             >
-              <Text className="text-lg font-black" style={{ color: PURPLE }}>
+              <Text className="text-lg font-black" style={{ color: "#ffffff" }}>
                 Recommended next
               </Text>
-              <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+              <Text
+                className="mt-2 text-base leading-6"
+                style={{ color: "#d7e8df" }}
+              >
                 {hasActivity
                   ? "Based on lower accuracy from existing stats."
                   : "A simple starter path until there is activity history."}
@@ -155,11 +181,11 @@ export function PracticeScreen() {
             </View>
 
             {insights.status === "loading" ? (
-              <View className="mt-5 flex-row items-center rounded-2xl bg-[#f4efff] p-4">
-                <ActivityIndicator color={PURPLE} />
+              <View className="mt-5 flex-row items-center rounded-2xl bg-[#eaf3ed] p-4">
+                <ActivityIndicator color={GREEN} />
                 <Text
-                  className="text-sm font-semibold text-[#5c6f65]"
-                  style={{ marginLeft: 10 }}
+                  className="text-sm font-semibold"
+                  style={{ color: MUTED, marginLeft: 10 }}
                 >
                   Loading activity stats...
                 </Text>
@@ -178,11 +204,14 @@ export function PracticeScreen() {
             ) : null}
 
             {!hasActivity && insights.status === "ready" ? (
-              <View className="mt-5 rounded-2xl border border-[#d8cdb8] bg-white p-4">
-                <Text className="text-base font-black text-[#243c32]">
+              <View
+                className="mt-5 rounded-2xl border bg-white p-4"
+                style={{ borderColor: BORDER }}
+              >
+                <Text className="text-base font-black" style={{ color: INK }}>
                   No activity history yet
                 </Text>
-                <Text className="mt-1 text-sm leading-5 text-[#5c6f65]">
+                <Text className="mt-1 text-sm leading-5" style={{ color: MUTED }}>
                   Play a game and this page will show real games played and
                   accuracy.
                 </Text>
@@ -204,24 +233,33 @@ export function PracticeScreen() {
 }
 
 function RecommendationRow({ activity }: { activity: PracticeActivity }) {
+  const meta = ACTIVITY_META[activity.key];
+
   return (
     <Pressable
       accessibilityRole="button"
       onPress={() => router.push(activity.route)}
-      className="flex-row items-center rounded-2xl bg-white p-4"
+      className="flex-row items-center rounded-2xl border p-4"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.12)",
+        borderColor: "rgba(255,255,255,0.16)",
+      }}
     >
       <ActivityIcon activity={activity} size={48} />
       <View className="flex-1" style={{ marginLeft: 14 }}>
-        <Text className="text-base font-black text-[#243c32]">
+        <Text className="text-base font-black" style={{ color: "#ffffff" }}>
           {activity.title}
         </Text>
-        <Text className="mt-1 text-sm font-semibold text-[#5c6f65]">
+        <Text
+          className="mt-1 text-sm font-semibold"
+          style={{ color: "#d8eee4" }}
+        >
           {activity.games > 0
             ? `${activity.accuracy}% accuracy`
             : "Ready to begin"}
         </Text>
       </View>
-      <Text className="text-2xl font-black" style={{ color: PURPLE }}>
+      <Text className="text-2xl font-black" style={{ color: meta.badge }}>
         ›
       </Text>
     </Pressable>
@@ -229,37 +267,48 @@ function RecommendationRow({ activity }: { activity: PracticeActivity }) {
 }
 
 function ActivityCard({ activity }: { activity: PracticeActivity }) {
+  const meta = ACTIVITY_META[activity.key];
+
   return (
     <Pressable
       accessibilityRole="button"
       onPress={() => router.push(activity.route)}
-      className="rounded-[28px] border border-[#d8cdb8] bg-white p-5"
+      className="rounded-[28px] border p-5"
+      style={{
+        backgroundColor: meta.accent,
+        borderColor: "rgba(35, 55, 47, 0.08)",
+      }}
     >
       <View className="flex-row items-center">
         <ActivityIcon activity={activity} size={68} />
         <View className="flex-1" style={{ marginLeft: 16 }}>
-          <Text className="text-xl font-black text-[#243c32]">
+          <Text className="text-xl font-black" style={{ color: INK }}>
             {activity.title}
           </Text>
-          <Text className="mt-1 text-sm font-semibold text-[#5c6f65]">
+          <Text className="mt-1 text-sm font-semibold" style={{ color: MUTED }}>
             {activity.ageContext}
           </Text>
         </View>
       </View>
-      <Text className="mt-4 text-base leading-6 text-[#5c6f65]">
+      <Text className="mt-4 text-base leading-6" style={{ color: MUTED }}>
         {activity.description}
       </Text>
       <View className="mt-4 flex-row items-center justify-between">
-        <Text className="text-sm font-black" style={{ color: PURPLE }}>
+        <Text className="text-sm font-black" style={{ color: GREEN }}>
           {activity.games > 0
             ? `${activity.games} game${activity.games === 1 ? "" : "s"}`
             : "No games yet"}
         </Text>
-        <Text className="text-sm font-black text-[#5c6f65]">
-          {activity.games > 0 ? `${activity.accuracy}% accuracy` : activity.statLabel}
+        <Text className="text-sm font-black" style={{ color: MUTED }}>
+          {activity.games > 0
+            ? `${activity.accuracy}% accuracy`
+            : activity.statLabel}
         </Text>
       </View>
-      <ProgressBar percent={activity.games > 0 ? activity.accuracy : 0} />
+      <ProgressBar
+        activity={activity}
+        percent={activity.games > 0 ? activity.accuracy : 0}
+      />
     </Pressable>
   );
 }
@@ -271,14 +320,19 @@ function ActivityIcon({
   activity: PracticeActivity;
   size: number;
 }) {
+  const meta = ACTIVITY_META[activity.key];
+
   return (
     <View
       className="items-center justify-center rounded-2xl"
-      style={{ backgroundColor: PURPLE_LIGHT, height: size, width: size }}
+      style={{ backgroundColor: meta.badge, height: size, width: size }}
     >
       <Text
         className="font-black"
-        style={{ color: PURPLE, fontSize: activity.icon.length > 1 ? 18 : 28 }}
+        style={{
+          color: meta.text,
+          fontSize: activity.icon.length > 1 ? 18 : 28,
+        }}
       >
         {activity.icon}
       </Text>
@@ -286,15 +340,23 @@ function ActivityIcon({
   );
 }
 
-function ProgressBar({ percent }: { percent: number }) {
+function ProgressBar({
+  activity,
+  percent,
+}: {
+  activity: PracticeActivity;
+  percent: number;
+}) {
+  const meta = ACTIVITY_META[activity.key];
+
   return (
     <View
       className="mt-3 overflow-hidden rounded-full"
-      style={{ backgroundColor: "#ebe3ff", height: 8 }}
+      style={{ backgroundColor: "rgba(255,255,255,0.58)", height: 8 }}
     >
       <View
         className="rounded-full"
-        style={{ backgroundColor: PURPLE, height: 8, width: `${percent}%` }}
+        style={{ backgroundColor: meta.bar, height: 8, width: `${percent}%` }}
       />
     </View>
   );
@@ -302,22 +364,9 @@ function ProgressBar({ percent }: { percent: number }) {
 
 function SectionTitle({ title }: { title: string }) {
   return (
-    <Text className="mb-3 mt-8 text-2xl font-black text-[#243c32]">
+    <Text className="mb-3 mt-8 text-2xl font-black" style={{ color: INK }}>
       {title}
     </Text>
-  );
-}
-
-function Avatar({ label, size }: { label: string; size: number }) {
-  return (
-    <View
-      className="items-center justify-center rounded-full"
-      style={{ backgroundColor: PURPLE_LIGHT, height: size, width: size }}
-    >
-      <Text className="font-black" style={{ color: PURPLE, fontSize: size * 0.34 }}>
-        {label.slice(0, 1).toUpperCase()}
-      </Text>
-    </View>
   );
 }
 
@@ -327,16 +376,21 @@ function PrimaryButton({ label, onPress }: { label: string; onPress(): void }) {
       accessibilityRole="button"
       onPress={onPress}
       className="mt-5 items-center rounded-2xl px-5 py-4"
-      style={{ backgroundColor: PURPLE }}
+      style={{ backgroundColor: GREEN }}
     >
-      <Text className="font-black text-white">{label}</Text>
+      <Text className="font-black" style={{ color: "#ffffff" }}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <View className="mt-8 rounded-[28px] border border-[#d8cdb8] bg-white p-6">
+    <View
+      className="mt-8 rounded-[28px] border bg-white p-6"
+      style={{ borderColor: BORDER }}
+    >
       {children}
     </View>
   );

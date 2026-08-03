@@ -8,6 +8,7 @@ import type {
 import { ApiError } from "@skill-spark/api-client";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMobileApi } from "@/api/use-mobile-api";
+import { ChildProfileSwitcher } from "@/children/child-profile-switcher";
 import { useChildren } from "@/children/use-children";
 import { BottomNav, BOTTOM_NAV_BASE_HEIGHT } from "@/navigation/bottom-nav";
 import {
@@ -22,8 +23,14 @@ import {
 } from "@/rewards/reward-state";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "@/tw";
 
-const PURPLE = "#7c3aed";
-const PURPLE_LIGHT = "#f4efff";
+const INK = "#21372e";
+const MUTED = "#66766f";
+const GREEN = "#2b5f4b";
+const CREAM = "#fbfcf7";
+const BORDER = "#d9e5dd";
+const YELLOW = "#ffd86f";
+const YELLOW_SOFT = "#fff0bd";
+const SAGE = "#dceee3";
 
 export function RewardsScreen() {
   const {
@@ -234,94 +241,71 @@ export function RewardsScreen() {
   const isLoading = childStatus === "loading" || status === "loading";
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1" style={{ backgroundColor: CREAM }}>
       <ScrollView
-        className="flex-1 bg-white"
+        className="flex-1"
         contentContainerStyle={{
-          paddingBottom: BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 88,
+          paddingBottom:
+            BOTTOM_NAV_BASE_HEIGHT + Math.max(insets.bottom, 12) + 88,
           paddingHorizontal: 20,
           paddingTop: Math.max(insets.top, 24) + 20,
         }}
         refreshControl={
           <RefreshControl
-            colors={[PURPLE]}
+            colors={[GREEN]}
             refreshing={refreshing}
-            tintColor={PURPLE}
+            tintColor={GREEN}
             onRefresh={() => void loadRewards("refresh")}
           />
         }
       >
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
-            <Text className="text-4xl font-black text-[#243c32]">Rewards</Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="text-4xl font-black" style={{ color: INK }}>
+              Rewards
+            </Text>
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               Request family rewards using earned stars.
             </Text>
           </View>
           <View
-            className="items-center justify-center rounded-full border border-[#d8cdb8] bg-white"
-            style={{ height: 58, width: 58 }}
+            className="items-center justify-center rounded-full border"
+            style={{
+              backgroundColor: YELLOW,
+              borderColor: "#e2b94d",
+              height: 58,
+              width: 58,
+            }}
           >
-            <Text className="font-black" style={{ color: PURPLE, fontSize: 24 }}>
+            <Text className="font-black" style={{ color: INK, fontSize: 24 }}>
               ☆
             </Text>
           </View>
         </View>
 
-        <View className="mt-6">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-3"
-          >
-            {children.map((child) => {
-              const selected = selectedChild?.id === child.id;
-              return (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  key={child.id}
-                  onPress={() => void selectChild(child.id)}
-                  className="flex-row items-center rounded-full border bg-white px-4 py-3"
-                  style={{ borderColor: selected ? PURPLE : "#d8cdb8" }}
-                >
-                  <Avatar label={child.name} size={32} />
-                  <Text
-                    className="text-base font-black text-[#243c32]"
-                    style={{ marginLeft: 8 }}
-                  >
-                    {child.name}
-                  </Text>
-                  {selected ? (
-                    <Text
-                      className="text-base font-black"
-                      style={{ color: PURPLE, marginLeft: 8 }}
-                    >
-                      ✓
-                    </Text>
-                  ) : null}
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+        <ChildProfileSwitcher
+          className="mt-6"
+          children={children}
+          selectedChildId={selectedChild?.id}
+          onSelect={(childId) => void selectChild(childId)}
+        />
 
         {selectedChild ? (
           <View
             className="mt-8 rounded-[28px] border p-5"
-            style={{ backgroundColor: PURPLE_LIGHT, borderColor: "#d7c8ff" }}
+            style={{ backgroundColor: YELLOW_SOFT, borderColor: "#eadca8" }}
           >
-            <Text className="text-lg font-black" style={{ color: PURPLE }}>
+            <Text className="text-lg font-black" style={{ color: GREEN }}>
               Current stars
             </Text>
             <View className="mt-3 flex-row flex-wrap items-end justify-between gap-3">
               <Text
-                className="font-black text-[#243c32]"
-                style={{ fontSize: 52, lineHeight: 58 }}
+                className="font-black"
+                style={{ color: INK, fontSize: 52, lineHeight: 58 }}
               >
                 {selectedChild.reward_points}
               </Text>
-              <Text className="mb-2 text-base font-semibold text-[#5c6f65]">
+              <Text className="mb-2 text-base font-semibold" style={{ color: MUTED }}>
                 Level {selectedChild.level} · {selectedChild.xp} XP
               </Text>
             </View>
@@ -329,15 +313,18 @@ export function RewardsScreen() {
         ) : null}
 
         {successMessage ? (
-          <Text className="mt-5 rounded-2xl bg-[#e9f7ee] px-4 py-3 text-sm font-black text-[#315f4c]">
+          <Text
+            className="mt-5 rounded-2xl px-4 py-3 text-sm font-black"
+            style={{ backgroundColor: SAGE, color: GREEN }}
+          >
             {successMessage}
           </Text>
         ) : null}
 
         {isLoading ? (
           <Panel>
-            <ActivityIndicator color={PURPLE} />
-            <Text className="mt-4 text-base font-semibold text-[#5c6f65]">
+            <ActivityIndicator color={GREEN} />
+            <Text className="mt-4 text-base font-semibold" style={{ color: MUTED }}>
               Loading rewards...
             </Text>
           </Panel>
@@ -345,10 +332,10 @@ export function RewardsScreen() {
 
         {!selectedChild && childStatus === "ready" ? (
           <Panel>
-            <Text className="text-xl font-black text-[#243c32]">
+            <Text className="text-xl font-black" style={{ color: INK }}>
               No child selected
             </Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               Choose or create a child profile before requesting rewards.
             </Text>
           </Panel>
@@ -356,10 +343,10 @@ export function RewardsScreen() {
 
         {childStatus === "error" ? (
           <Panel>
-            <Text className="text-xl font-black text-[#243c32]">
+            <Text className="text-xl font-black" style={{ color: INK }}>
               Could not load children
             </Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               {childError ?? "Try again when your connection is ready."}
             </Text>
           </Panel>
@@ -367,10 +354,10 @@ export function RewardsScreen() {
 
         {status === "error" ? (
           <Panel>
-            <Text className="text-xl font-black text-[#243c32]">
+            <Text className="text-xl font-black" style={{ color: INK }}>
               Could not load rewards
             </Text>
-            <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+            <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
               {error}
             </Text>
             <PrimaryButton label="Retry" onPress={() => void loadRewards()} />
@@ -382,10 +369,10 @@ export function RewardsScreen() {
             <SectionTitle title="Family rewards" />
             {visibleRewards.length === 0 ? (
               <Panel>
-                <Text className="text-xl font-black text-[#243c32]">
+                <Text className="text-xl font-black" style={{ color: INK }}>
                   No rewards yet
                 </Text>
-                <Text className="mt-2 text-base leading-6 text-[#5c6f65]">
+                <Text className="mt-2 text-base leading-6" style={{ color: MUTED }}>
                   Family rewards are created from the parent web dashboard.
                 </Text>
               </Panel>
@@ -454,25 +441,30 @@ function RewardCard({
   const disabled = !requestState.canRequest || isRequesting;
 
   return (
-    <View className="rounded-[28px] border border-[#d8cdb8] bg-white p-5">
+    <View
+      className="rounded-[28px] border p-5"
+      style={{ backgroundColor: "#ffffff", borderColor: BORDER }}
+    >
       <View className="flex-row items-center">
         <View
           className="items-center justify-center rounded-2xl"
-          style={{ backgroundColor: PURPLE_LIGHT, height: 64, width: 64 }}
+          style={{ backgroundColor: YELLOW_SOFT, height: 64, width: 64 }}
         >
-          <Text className="text-3xl">★</Text>
+          <Text className="text-3xl" style={{ color: GREEN }}>
+            ★
+          </Text>
         </View>
         <View className="flex-1" style={{ marginLeft: 16 }}>
-          <Text className="text-xl font-black text-[#243c32]">
+          <Text className="text-xl font-black" style={{ color: INK }}>
             {reward.title}
           </Text>
-          <Text className="mt-1 text-sm font-black" style={{ color: PURPLE }}>
+          <Text className="mt-1 text-sm font-black" style={{ color: GREEN }}>
             {reward.star_cost} stars · {requestState.label}
           </Text>
         </View>
       </View>
       {reward.description ? (
-        <Text className="mt-4 text-base leading-6 text-[#5c6f65]">
+        <Text className="mt-4 text-base leading-6" style={{ color: MUTED }}>
           {reward.description}
         </Text>
       ) : null}
@@ -486,12 +478,12 @@ function RewardCard({
         disabled={disabled}
         onPress={onRequest}
         className="mt-4 items-center rounded-2xl px-5 py-4"
-        style={{ backgroundColor: disabled ? "#d8cdb8" : PURPLE }}
+        style={{ backgroundColor: disabled ? "#cfdad3" : GREEN }}
       >
         {isRequesting ? (
           <ActivityIndicator color="#ffffff" />
         ) : (
-          <Text className="font-black text-white">
+          <Text className="font-black" style={{ color: "#ffffff" }}>
             {requestState.actionLabel}
           </Text>
         )}
@@ -515,7 +507,9 @@ function RedemptionSection({
 }) {
   return (
     <View className="mt-8">
-      <Text className="mb-3 text-2xl font-black text-[#243c32]">{title}</Text>
+      <Text className="mb-3 text-2xl font-black" style={{ color: INK }}>
+        {title}
+      </Text>
       <View className="gap-3">
         {redemptions.map((redemption) => (
           <RedemptionCard
@@ -545,19 +539,22 @@ function RedemptionCard({
   const canCancel = canCancelRedemption(redemption);
 
   return (
-    <View className="rounded-[28px] border border-[#d8cdb8] bg-white p-5">
+    <View
+      className="rounded-[28px] border bg-white p-5"
+      style={{ borderColor: BORDER }}
+    >
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
-          <Text className="text-lg font-black text-[#243c32]">
+          <Text className="text-lg font-black" style={{ color: INK }}>
             {redemption.reward_title}
           </Text>
-          <Text className="mt-1 text-sm font-black" style={{ color: PURPLE }}>
+          <Text className="mt-1 text-sm font-black" style={{ color: GREEN }}>
             {redemption.star_cost} stars · {redemptionLabel(redemption.status)}
           </Text>
         </View>
       </View>
       {redemption.reward_description ? (
-        <Text className="mt-3 text-sm leading-5 text-[#5c6f65]">
+        <Text className="mt-3 text-sm leading-5" style={{ color: MUTED }}>
           {redemption.reward_description}
         </Text>
       ) : null}
@@ -577,12 +574,12 @@ function RedemptionCard({
           disabled={isCancelling}
           onPress={onCancel}
           className="mt-4 items-center rounded-2xl border px-5 py-4"
-          style={{ borderColor: PURPLE }}
+          style={{ borderColor: GREEN }}
         >
           {isCancelling ? (
-            <ActivityIndicator color={PURPLE} />
+            <ActivityIndicator color={GREEN} />
           ) : (
-            <Text className="font-black" style={{ color: PURPLE }}>
+            <Text className="font-black" style={{ color: GREEN }}>
               Cancel request
             </Text>
           )}
@@ -594,22 +591,9 @@ function RedemptionCard({
 
 function SectionTitle({ title }: { title: string }) {
   return (
-    <Text className="mb-3 mt-8 text-2xl font-black text-[#243c32]">
+    <Text className="mb-3 mt-8 text-2xl font-black" style={{ color: INK }}>
       {title}
     </Text>
-  );
-}
-
-function Avatar({ label, size }: { label: string; size: number }) {
-  return (
-    <View
-      className="items-center justify-center rounded-full"
-      style={{ backgroundColor: PURPLE_LIGHT, height: size, width: size }}
-    >
-      <Text className="font-black" style={{ color: PURPLE, fontSize: size * 0.34 }}>
-        {label.slice(0, 1).toUpperCase()}
-      </Text>
-    </View>
   );
 }
 
@@ -619,16 +603,21 @@ function PrimaryButton({ label, onPress }: { label: string; onPress(): void }) {
       accessibilityRole="button"
       onPress={onPress}
       className="mt-5 items-center rounded-2xl px-5 py-4"
-      style={{ backgroundColor: PURPLE }}
+      style={{ backgroundColor: GREEN }}
     >
-      <Text className="font-black text-white">{label}</Text>
+      <Text className="font-black" style={{ color: "#ffffff" }}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <View className="mt-8 rounded-[28px] border border-[#d8cdb8] bg-white p-6">
+    <View
+      className="mt-8 rounded-[28px] border bg-white p-6"
+      style={{ borderColor: BORDER }}
+    >
       {children}
     </View>
   );

@@ -8,13 +8,16 @@ export { BOTTOM_NAV_ITEMS, type MobileTab } from "./bottom-nav-items";
 
 export const BOTTOM_NAV_BASE_HEIGHT = 74;
 
+const ACTIVE_COLOR = "#2b5f4b";
+const INACTIVE_COLOR = "#66766f";
+
 export function BottomNav({ active }: { active: MobileTab }) {
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, 12);
 
   return (
     <View
-      className="flex-row border-t border-[#d8cdb8] bg-white px-4"
+      className="flex-row border-t border-[#d9e5dd] bg-white px-4"
       style={{
         bottom: 0,
         height: BOTTOM_NAV_BASE_HEIGHT + bottomInset,
@@ -38,13 +41,13 @@ export function BottomNav({ active }: { active: MobileTab }) {
           >
             <Text
               className="text-2xl font-black"
-              style={{ color: isActive ? "#7c3aed" : "#5c6f65" }}
+              style={{ color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR }}
             >
               {item.icon}
             </Text>
             <Text
               className="mt-1 text-xs font-bold"
-              style={{ color: isActive ? "#7c3aed" : "#5c6f65" }}
+              style={{ color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR }}
             >
               {item.label}
             </Text>
