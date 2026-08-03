@@ -49,6 +49,7 @@ pnpm db:reset
 ```
 
 `db:reset` destroys and recreates local database data only. It does not touch production.
+The local seed account is `alice@example.com` / `password123`.
 
 Run the web app and backend together:
 
@@ -106,7 +107,7 @@ Create a migration:
 pnpm db:migration:new <migration_name>
 ```
 
-Validate migrations by rebuilding the local Supabase database:
+Validate migrations by rebuilding the local Supabase database with seed data:
 
 ```bash
 pnpm db:migrate:check

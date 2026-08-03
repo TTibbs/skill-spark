@@ -148,7 +148,7 @@ switch (command) {
   }
 
   case "check":
-    runSupabase(["db", "reset", "--local", "--no-seed"]);
+    runSupabase(["db", "reset", "--local"]);
     break;
 
   case "dry-run":

@@ -1,9 +1,9 @@
 insert into user_profiles (id, username, display_name, email, profile_image_url, password_hash, is_parent, total_children, timezone, user_preferences) values
-  (1, 'local_parent', 'Local Parent', 'local-parent@example.test', '', '$2b$10$PK1uN99FbQuSoywHymLd.eJjTA/tGE5WOY3qkd9iF3f1NDuXPrKhm', true, 2, 'Europe/London', '{"notificationsEnabled": true, "theme": "system", "language": "en", "pin_key": "$2b$10$9g6OekWGPb4MgxjlszpN9uQReFcE4g2.t02AABxAFOW1JLA0tzEPu"}');
+  (1, 'alice123', 'Alice', 'alice@example.com', '', '$2b$10$PK1uN99FbQuSoywHymLd.eJjTA/tGE5WOY3qkd9iF3f1NDuXPrKhm', true, 2, 'Europe/London', '{"notificationsEnabled": true, "theme": "system", "language": "en", "pin_key": "$2b$10$9g6OekWGPb4MgxjlszpN9uQReFcE4g2.t02AABxAFOW1JLA0tzEPu"}');
 
 insert into child_profiles (id, user_id, name, age, xp, level, reward_points, last_played) values
-  (1, 1, 'Avery', 6, 120, 2, 25, now()),
-  (2, 1, 'Riley', 4, 35, 1, 10, now());
+  (1, 1, 'Emma', 6, 120, 2, 25, now()),
+  (2, 1, 'Liam', 4, 35, 1, 10, now());
 
 insert into word_categories (id, name) values
   (1, 'Animals'),
