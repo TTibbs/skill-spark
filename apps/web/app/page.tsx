@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TactileButton } from "@/components/ui/tactile-button";
 
 const games = [
   {
@@ -125,13 +126,14 @@ export default function Home() {
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/games"
-                  className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#243f35] px-7 text-base font-bold text-white shadow-[0_8px_0_#15271f] transition hover:-translate-y-1 hover:bg-[#2e4c40] hover:shadow-[0_12px_0_#15271f] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[#8ec6ab]"
+                <TactileButton
+                  render={<Link href="/games" />}
+                  effect="slam"
+                  className="min-h-14 gap-2 rounded-2xl border-[#243f35] bg-[#243f35] px-7 py-0 text-base font-bold text-white [--tactile-shadow-color:#76aa8f] hover:bg-[#2e4c40] hover:text-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[#8ec6ab]"
                 >
                   Explore the games
                   <ArrowRightIcon />
-                </Link>
+                </TactileButton>
 
                 <Link
                   href="/parents"
@@ -375,13 +377,14 @@ export default function Home() {
                 ))}
               </ul>
 
-              <Link
-                href="/parents"
-                className="mt-9 inline-flex min-h-13 items-center justify-center gap-2 rounded-2xl bg-[#2d463b] px-6 font-bold text-white transition hover:bg-[#3a574a] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[#afcbbb]"
+              <TactileButton
+                render={<Link href="/parents" />}
+                effect="press"
+                className="mt-9 min-h-13 gap-2 rounded-2xl border-[#2d463b] bg-[#2d463b] px-6 py-0 font-bold text-white [--tactile-shadow-color:#76aa8f] hover:bg-[#3a574a] hover:text-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[#afcbbb]"
               >
                 Explore the parent dashboard
                 <ArrowRightIcon />
-              </Link>
+              </TactileButton>
             </div>
           </div>
         </section>
@@ -398,13 +401,14 @@ export default function Home() {
             </p>
 
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                href="/games"
-                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#ffd86f] px-7 font-bold text-[#26372f] shadow-[0_7px_0_#cfae4e] transition hover:-translate-y-1 hover:shadow-[0_10px_0_#cfae4e]"
+              <TactileButton
+                render={<Link href="/games" />}
+                effect="lift"
+                className="min-h-14 gap-2 rounded-2xl border-[#ffd86f] bg-[#ffd86f] px-7 py-0 font-bold text-[#26372f] [--tactile-shadow-color:#cfae4e] hover:bg-[#ffe28d] hover:text-[#26372f]"
               >
                 Start playing
                 <ArrowRightIcon />
-              </Link>
+              </TactileButton>
 
               <Link
                 href="/parents"

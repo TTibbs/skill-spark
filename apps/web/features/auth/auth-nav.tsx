@@ -1,19 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "./use-auth";
 
 export function AuthNav() {
+  const pathname = usePathname();
   const router = useRouter();
   const { status, logout } = useAuth();
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password";
+  const isProtectedAppPage =
+    pathname?.startsWith("/parents") ||
+    pathname?.startsWith("/chores") ||
+    pathname?.startsWith("/rewards") ||
+    false;
 
   const handleLogout = async () => {
     await logout();
     router.push("/login");
   };
 
-  if (status === "loading") {
+  if (status === "loading" || isAuthPage || isProtectedAppPage) {
     return null;
   }
 

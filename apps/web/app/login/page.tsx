@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { ApiError } from "@skill-spark/api-client";
+import { TactileButton } from "@/components/ui/tactile-button";
 import {
   AuthShell,
   Field,
@@ -97,13 +98,14 @@ export default function LoginPage() {
           </div>
         </Field>
 
-        <button
+        <TactileButton
           type="submit"
           disabled={isSubmitting}
-          className="min-h-12 w-full rounded-2xl bg-[#244137] px-5 font-black text-white shadow-[0_6px_0_#15271f] transition hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60"
+          effect="press"
+          className="min-h-12 w-full rounded-2xl border-[#15271f] bg-[#244137] px-5 py-0 font-black text-white hover:bg-[#2e4c40] hover:text-white disabled:translate-y-0 disabled:opacity-60"
         >
           {isSubmitting ? "Logging in..." : "Log in"}
-        </button>
+        </TactileButton>
 
         <Link
           href="/forgot-password"

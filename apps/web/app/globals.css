@@ -1,13 +1,39 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #244137;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f0eb;
+  --secondary-foreground: #263d33;
+  --muted: #eef3ef;
+  --foreground-muted: #66766f;
+  --accent: #dcecff;
+  --accent-foreground: #385064;
+  --destructive: #8a4a38;
+  --border: #d6e0d8;
+  --input: #d6e0d8;
+  --ring: #a8c7b6;
+  --radius-md: 0.75rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--foreground-muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -17,6 +43,18 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #dcecff;
+    --primary-foreground: #172620;
+    --secondary: #20342b;
+    --secondary-foreground: #edf6f0;
+    --muted: #20342b;
+    --foreground-muted: #a8b8af;
+    --accent: #244137;
+    --accent-foreground: #ffffff;
+    --destructive: #f0a08a;
+    --border: #32483e;
+    --input: #32483e;
+    --ring: #6f9682;
   }
 }
 
@@ -25,4 +63,14 @@ body {
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
 }

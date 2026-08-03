@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { TactileButton } from "@/components/ui/tactile-button";
 import { useSubmitGameResult } from "@/features/game-results/use-submit-game-result";
 
 type Operation = "add" | "subtract";
@@ -510,9 +511,10 @@ export function MathsMeadow() {
             const isSelected = selectedAnswer === answer;
 
             return (
-              <button
+              <TactileButton
                 key={answer}
                 type="button"
+                effect="squish"
                 className={[
                   "maths-meadow__answer",
                   isCorrect ? "maths-meadow__answer--correct" : "",
@@ -528,7 +530,7 @@ export function MathsMeadow() {
                 aria-label={`Answer ${answer}`}
               >
                 {answer}
-              </button>
+              </TactileButton>
             );
           })}
         </div>
@@ -563,16 +565,23 @@ export function MathsMeadow() {
           </p>
           <div className="maths-meadow__complete-actions">
             {progressSave.status === "failed" && (
-              <button
+              <TactileButton
                 type="button"
+                effect="squish"
+                className="maths-meadow__complete-action"
                 onClick={() => void progressSave.retry().catch(() => undefined)}
               >
                 Retry saving
-              </button>
+              </TactileButton>
             )}
-            <button type="button" onClick={restartGame}>
+            <TactileButton
+              type="button"
+              effect="squish"
+              className="maths-meadow__complete-action"
+              onClick={restartGame}
+            >
               Play again
-            </button>
+            </TactileButton>
           </div>
         </div>
       )}
@@ -809,10 +818,10 @@ export function MathsMeadow() {
           display: grid;
           width: 100%;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 12px;
+          gap: clamp(18px, 4vw, 28px);
         }
 
-        .maths-meadow__answer {
+        .maths-meadow :global(.maths-meadow__answer) {
           min-height: clamp(70px, 13vh, 94px);
           border: 2px solid rgba(255, 255, 255, 0.75);
           border-radius: 24px;
@@ -825,6 +834,7 @@ export function MathsMeadow() {
           font: inherit;
           font-size: clamp(30px, 8vw, 46px);
           font-weight: 700;
+          padding: 0;
           transition:
             transform 120ms ease,
             box-shadow 120ms ease,
@@ -832,24 +842,24 @@ export function MathsMeadow() {
           touch-action: manipulation;
         }
 
-        .maths-meadow__answer:hover:not(:disabled) {
+        .maths-meadow :global(.maths-meadow__answer:hover:not(:disabled)) {
           background: rgba(255, 255, 255, 0.86);
-          transform: translateY(-2px);
+          transform: translateY(-2px) scale(1.025, 0.96);
         }
 
-        .maths-meadow__answer:active:not(:disabled) {
+        .maths-meadow :global(.maths-meadow__answer:active:not(:disabled)) {
           box-shadow:
             0 2px 0 rgba(139, 111, 171, 0.28),
             0 8px 16px rgba(69, 59, 106, 0.1);
           transform: translateY(5px);
         }
 
-        .maths-meadow__answer:focus-visible {
+        .maths-meadow :global(.maths-meadow__answer:focus-visible) {
           outline: 4px solid rgba(114, 87, 161, 0.38);
           outline-offset: 3px;
         }
 
-        .maths-meadow__answer--correct {
+        .maths-meadow :global(.maths-meadow__answer--correct) {
           border-color: rgba(93, 197, 132, 0.8);
           background: #bff1cf;
           box-shadow:
@@ -859,7 +869,7 @@ export function MathsMeadow() {
           animation: correct-pop 0.42s ease;
         }
 
-        .maths-meadow__answer--incorrect {
+        .maths-meadow :global(.maths-meadow__answer--incorrect) {
           border-color: rgba(235, 126, 142, 0.7);
           background: #ffd2d8;
           box-shadow: 0 3px 0 #d9949e;
@@ -870,7 +880,7 @@ export function MathsMeadow() {
           animation: incorrect-shake 0.34s ease;
         }
 
-        .maths-meadow__answer:disabled {
+        .maths-meadow :global(.maths-meadow__answer:disabled) {
           cursor: default;
         }
 
@@ -922,7 +932,7 @@ export function MathsMeadow() {
           margin-top: 16px;
         }
 
-        .maths-meadow__complete-actions button {
+        .maths-meadow :global(.maths-meadow__complete-action) {
           min-height: 44px;
           border: 0;
           border-radius: 16px;
@@ -931,6 +941,11 @@ export function MathsMeadow() {
           padding: 0 18px;
           font-weight: 900;
           cursor: pointer;
+        }
+
+        .maths-meadow :global(.maths-meadow__complete-action:hover:not(:disabled)) {
+          background: #3b6d4e;
+          color: white;
         }
 
         .maths-meadow__ground {
@@ -1139,7 +1154,7 @@ export function MathsMeadow() {
             margin: 11px 0 9px;
           }
 
-          .maths-meadow__answer {
+          .maths-meadow :global(.maths-meadow__answer) {
             min-height: 62px;
           }
 
@@ -1160,10 +1175,10 @@ export function MathsMeadow() {
           }
 
           .maths-meadow__answers {
-            gap: 10px;
+            gap: 14px;
           }
 
-          .maths-meadow__answer {
+          .maths-meadow :global(.maths-meadow__answer) {
             border-radius: 20px;
           }
 
@@ -1176,13 +1191,13 @@ export function MathsMeadow() {
           .maths-meadow__character,
           .maths-meadow__character--happy,
           .maths-meadow__cloud,
-          .maths-meadow__answer,
+          .maths-meadow :global(.maths-meadow__answer),
           .maths-meadow__celebration {
             animation-duration: 0.01ms;
             animation-iteration-count: 1;
           }
 
-          .maths-meadow__answer {
+          .maths-meadow :global(.maths-meadow__answer) {
             transition: none;
           }
         }

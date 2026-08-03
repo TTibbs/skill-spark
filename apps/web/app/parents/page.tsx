@@ -10,6 +10,7 @@ import type {
   FamilyReward,
   RewardRedemption,
 } from "@skill-spark/contracts";
+import { TactileButton } from "@/components/ui/tactile-button";
 import { useAuth } from "@/features/auth/use-auth";
 import { useChildChores } from "@/features/children/hooks/use-child-chores";
 import { useChildStats } from "@/features/children/hooks/use-child-stats";
@@ -698,6 +699,45 @@ export default function ParentsPage() {
 }
 
 function Header() {
+  const router = useRouter();
+  const { logout, user } = useAuth();
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = React.useState(false);
+  const accountMenuRef = React.useRef<HTMLDivElement | null>(null);
+  const profileInitial =
+    user?.display_name?.trim().charAt(0) ||
+    user?.username?.trim().charAt(0) ||
+    "?";
+  const accountName =
+    user?.display_name?.trim() || user?.username?.trim() || "Parent account";
+
+  const handleLogout = async () => {
+    setIsAccountMenuOpen(false);
+    await logout();
+    router.push("/login");
+  };
+
+  React.useEffect(() => {
+    if (!isAccountMenuOpen) {
+      return;
+    }
+
+    const closeOnOutsidePointerDown = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        accountMenuRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+
+      setIsAccountMenuOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointerDown);
+    };
+  }, [isAccountMenuOpen]);
+
   return (
     <header className="sticky top-0 z-40 border-b border-[#dce5dd] bg-[#fbfcf8]/92 backdrop-blur-xl">
       <div className="mx-auto flex h-[70px] w-full max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -725,21 +765,41 @@ function Header() {
             View games
           </Link>
 
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#d6e0d8] bg-white text-[#52665d] transition hover:border-[#b5c8bb] hover:text-[#2d493c]"
-            aria-label="Open settings"
-          >
-            <SettingsIcon />
-          </button>
+          <div ref={accountMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsAccountMenuOpen((isOpen) => !isOpen)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dcecff] text-sm font-black uppercase text-[#385064] transition hover:bg-[#cfe4ff]"
+              aria-label="Parent account"
+              aria-haspopup="menu"
+              aria-expanded={isAccountMenuOpen}
+            >
+              {profileInitial}
+            </button>
 
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dcecff] text-sm font-black text-[#385064]"
-            aria-label="Open parent profile"
-          >
-            TW
-          </button>
+            {isAccountMenuOpen ? (
+              <div
+                role="menu"
+                className="absolute right-0 top-12 w-56 rounded-xl border border-[#d6e0d8] bg-white p-2 text-[#263d33] shadow-[0_18px_45px_rgba(43,64,54,0.16)]"
+              >
+                <div className="border-b border-[#edf2ee] px-3 py-2">
+                  <p className="text-sm font-black">{accountName}</p>
+                  <p className="mt-1 text-xs font-semibold text-[#74857c]">
+                    Parent account
+                  </p>
+                </div>
+                <TactileButton
+                  type="button"
+                  role="menuitem"
+                  onClick={handleLogout}
+                  effect="slideLeft"
+                  className="mt-2 min-h-10 w-full justify-start rounded-lg border-[#8a4a38] bg-[#fff8f4] px-3 py-0 text-left text-sm font-bold text-[#8a4a38] hover:bg-[#fff0ec] hover:text-[#8a4a38]"
+                >
+                  Log out
+                </TactileButton>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </header>
@@ -2717,24 +2777,6 @@ function LearningIcon() {
       <path d="m3 7 9-4 9 4-9 4-9-4Z" />
       <path d="M7 9.5V15c3 2 7 2 10 0V9.5" />
       <path d="M21 7v7" />
-    </svg>
-  );
-}
-
-function SettingsIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" />
     </svg>
   );
 }
