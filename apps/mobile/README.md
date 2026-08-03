@@ -25,4 +25,11 @@ pnpm mobile:build:dev:ios
 pnpm --filter @skill-spark/mobile start --dev-client
 ```
 
+For emulator/simulator installs, use the simulator profile:
+
+```bash
+pnpm mobile:build:dev:ios:simulator
+pnpm mobile:build:dev:android:emulator
+```
+
 Do not run a production EAS build for this development-client pass.
