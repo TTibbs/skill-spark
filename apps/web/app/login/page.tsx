@@ -41,7 +41,6 @@ export default function LoginPage() {
       });
       router.push("/parents");
     } catch (caught) {
-      console.error("Login failed", caught);
       const message =
         caught instanceof ApiError
           ? caught.message

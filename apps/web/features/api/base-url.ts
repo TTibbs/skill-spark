@@ -13,8 +13,7 @@ export function getBrowserApiBaseUrl() {
     return configured;
   }
 
-  console.error(
-    `Invalid NEXT_PUBLIC_API_URL value "${configured}". Falling back to ${DEFAULT_API_BASE_URL}.`
+  throw new Error(
+    `Invalid NEXT_PUBLIC_API_URL value "${configured}". Use a path starting with "/" or an absolute http(s) URL.`
   );
-  return DEFAULT_API_BASE_URL;
 }

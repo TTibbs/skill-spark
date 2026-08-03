@@ -16,7 +16,10 @@
     "supabase:stop": "pnpm exec supabase stop",
     "supabase:status": "pnpm exec supabase status",
     "db:reset": "pnpm exec supabase db reset",
-    "db:migration:new": "pnpm exec supabase migration new",
+    "db:migrate": "node scripts/db.mjs migrate",
+    "db:migrate:check": "node scripts/db.mjs check",
+    "db:migrate:dry-run": "node scripts/db.mjs dry-run",
+    "db:migration:new": "node scripts/db.mjs new",
     "db:types": "pnpm exec supabase gen types --lang typescript --local > packages/contracts/src/database.types.ts",
     "env:local": "test -f apps/backend/.env.local || cp apps/backend/.env.example apps/backend/.env.local",
     "test:backend:local": "pnpm exec supabase db reset && NODE_ENV=test TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55422/postgres pnpm --filter @skill-spark/backend exec jest --watchman=false --runInBand"
@@ -25,6 +28,11 @@
     "concurrently": "^9.0.0",
     "eas-cli": "^21.4.0",
     "supabase": "2.75.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "supabase"
+    ]
   },
   "packageManager": "pnpm@10.5.2"
 }

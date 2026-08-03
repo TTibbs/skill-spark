@@ -1,11 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { getBrowserApiBaseUrl } from "./base-url";
 
 const originalApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 afterEach(() => {
   process.env.NEXT_PUBLIC_API_URL = originalApiUrl;
-  vi.restoreAllMocks();
 });
 
 describe("getBrowserApiBaseUrl", () => {
@@ -27,13 +26,11 @@ describe("getBrowserApiBaseUrl", () => {
     expect(getBrowserApiBaseUrl()).toBe("https://api.example.test/api");
   });
 
-  it("rejects malformed relative values", () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+  it("throws for malformed relative values", () => {
     process.env.NEXT_PUBLIC_API_URL = "Aug 02 23:42/api";
 
-    expect(getBrowserApiBaseUrl()).toBe("/api");
-    expect(consoleError).toHaveBeenCalledWith(
-      'Invalid NEXT_PUBLIC_API_URL value "Aug 02 23:42/api". Falling back to /api.'
+    expect(() => getBrowserApiBaseUrl()).toThrow(
+      'Invalid NEXT_PUBLIC_API_URL value "Aug 02 23:42/api".'
     );
   });
 });

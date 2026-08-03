@@ -100,6 +100,31 @@ pnpm db:types
 
 The generated types live in `packages/contracts/src/database.types.ts` and describe the local schema.
 
+Create a migration:
+
+```bash
+pnpm db:migration:new <migration_name>
+```
+
+Validate migrations by rebuilding the local Supabase database:
+
+```bash
+pnpm db:migrate:check
+```
+
+Preview and apply committed migrations to the linked Supabase project:
+
+```bash
+pnpm db:migrate:dry-run
+pnpm db:migrate
+```
+
+These commands use `SUPABASE_PROJECT_REF` to link the Supabase project and then
+run `supabase db push --linked`. They do not use a database URL. Env values are
+loaded from `.env`, `.env.development`, `.env.local`, `apps/backend/.env`,
+`apps/backend/.env.development`, and `apps/backend/.env.local`; shell variables
+still take priority.
+
 ## Family Rewards
 
 Parents manage family-specific rewards through the Express API. Children request
@@ -211,6 +236,8 @@ Useful commands:
 pnpm supabase:start
 pnpm supabase:status
 pnpm db:reset
+pnpm db:migration:new add_example
+pnpm db:migrate:check
 pnpm dev
 pnpm test:backend:local
 pnpm supabase:stop
@@ -237,9 +264,16 @@ Next.js or future Expo app
 
 Custom JWT authentication remains in place. Do not replace it with Supabase Auth, direct Supabase client queries, Edge Functions, or Next.js route handlers as part of this setup.
 
-Migrations and seed data are committed under `supabase/`. The initial local migration was created from the backend's existing custom TypeScript seed schema. It should be manually reviewed against production before any production schema workflow.
+Migrations and seed data are committed under `supabase/`. The initial local
+migration was created from the backend's existing custom TypeScript seed schema.
+It should be manually reviewed against production before any production schema
+workflow.
 
-Production linking, remote schema pulls, remote pushes, migration repair, and hosted project changes are intentionally excluded. When ready, manually review the local migration history against production before running any Supabase link, pull or push commands.
+Avoid making remote schema changes directly through Supabase Studio, the Table
+Editor, or ad hoc SQL after adopting committed migrations because those changes
+bypass local migration history. If a remote project already has schema changes
+that are not represented locally, pull and review them before deploying new
+migrations. Do not run `supabase db reset --linked` on production.
 
 ## Deployment
 
